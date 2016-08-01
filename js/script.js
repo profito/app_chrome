@@ -51,15 +51,52 @@ function updateView() {
         $('.not_authorization').show();
     }
 }
+
+
 function openPage(url) {
     if (url.split(':')[0] == 'http' || url.split(':')[0] == 'https') {
-        window.open(url, '_blank');
+        chrome.tabs.create({url: url}, function (tabs) {
+            setBackground("pageRecId", tabs.id, tabs.windowId);
+        });
     } else {
-        window.open('http://' + url, '_blank');
+        chrome.tabs.create({url: 'http://'+url}, function (tabs) {
+            setBackground("pageRecId", tabs.id, tabs.windowId);
+            setDom('addEvent()')
+        });
     }
 }
 
 init();
+
+// Работа с DOM (injected.js)
+function setDom(code) {
+    chrome.tabs.getSelected(null, function (tab) {
+        chrome.tabs.executeScript(tab.id, {code: code});
+    });
+}
+//Работа с Background.js
+function setBackground(eventPage, object, objWin) {
+    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin}, function (obj) {
+        console.log('Ответ от фоновой странице:', obj.text);
+        return obj;
+    });
+}
+
+var runtimePort;
+
+chrome.runtime.onConnect.addListener(function (port) {
+    runtimePort = port;
+
+    runtimePort.onMessage.addListener(function (message) {
+        if (!message || !message.messageFromContentScript1234) {
+            console.log('message.messageFromContentScript1234')
+            return;
+        }
+        if (message.sdp) {
+            console.log('message.sdp')
+        }
+    });
+});
 
 /*
  function init() {

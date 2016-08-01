@@ -3,12 +3,32 @@
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
 
 
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    console.log('Пришло:', request);
+    if (request.eventPage == "pageRecId") {
+        pageRecId = request.obj;
+        pageRecWinId = request.objWin;
+        console.log('pageRecId', pageRecId, pageRecWinId)
+
+       /* chrome.tabs.executeScript(pageRecId, {
+            file:'js/jquery.js'
+        });
+        chrome.tabs.executeScript(pageRecId, {
+            file: 'js/injected.js'
+        });*/
+
+    }
+    if (request.eventPage == "stopStep") {
+        sendResponse({text: "Шаг " + request.step + " завершен"});
+    }
+});
 
 chrome.browserAction.setIcon({
     path: 'images/main-icon.png'
 });
 
-chrome.browserAction.onClicked.addListener(getUserConfigs);
+
+//chrome.browserAction.onClicked.addListener(getUserConfigs);
 
 function captureDesktop() {
     if (recorder && recorder.stream && recorder.stream.onended) {

@@ -1,30 +1,52 @@
 {
-	"name" : "UXCrowd",
-	"short_name" : "UXCrowd",
-    "author": "UXCrowd",
-	"version" : "1.1.201",
-	"manifest_version" : 2,
-    "minimum_chrome_version": "49",
-    "incognito": "not_allowed",
-	"description" : "Запись тестовых видео",
-    "background": {
-	    "scripts": ["background.js", "RecordRTC.min.js", "script.js"],
-	    "persistent": false
-	},
-	"browser_action" : {
-		"default_icon" : "images/main-icon.png",
-		"default_popup": "popup.html",
-		"default_title" : "Record Screen"
-	},
-	"icons" : {
-		"16" : "images/main-icon.png",
-		"22" : "images/main-icon.png",
-		"32" : "images/main-icon.png",
-		"48" : "images/main-icon.png",
-		"128": "images/main-icon.png"
-	},
-	"permissions": ["desktopCapture", "storage", "tabs", "<all_urls>"],
-	"web_accessible_resources": [
-		"images/main-icon.png"
-	]
+  "name": "UXCrowd",
+  "short_name": "UXCrowd",
+  "author": "UXCrowd",
+  "version": "1.1.201",
+  "manifest_version": 2,
+  "minimum_chrome_version": "49",
+  "incognito": "not_allowed",
+  "description": "Запись тестовых видео",
+  "background": {
+    "scripts": [
+      "js/jquery.js",
+      "background.js",
+      "RecordRTC.min.js",
+      "script.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_icon": "images/main-icon.png",
+    "default_popup": "popup.html",
+    "default_title": "Record Screen"
+  },
+  "icons": {
+    "16": "images/main-icon.png",
+    "22": "images/main-icon.png",
+    "32": "images/main-icon.png",
+    "48": "images/main-icon.png",
+    "128": "images/main-icon.png"
+  },
+  "permissions": [
+    "desktopCapture",
+    "storage",
+    "tabs",
+    "activeTab",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    "images/main-icon.png"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://illuzion-cinema.ru/"
+      ],
+      "js": [
+        "js/jquery.js",
+        "js/null.js"
+      ]
+    }
+  ]
 }
