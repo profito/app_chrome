@@ -1,0 +1,96 @@
+body {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  width: 320px;
+  border: none; }
+
+.popap_ux {
+  position: fixed;
+  display: inline-block;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  width: 300px;
+  min-height: 50px; }
+  .popap_ux h2 {
+    color: #fff; }
+  .popap_ux button {
+    width: 50%; }
+
+.window_plugin {
+  width: 100%;
+  padding-bottom: 15px;
+  padding-top: 15px;
+  display: inline-block; }
+  .window_plugin * {
+    font-family: 'Roboto', sans-serif; }
+  .window_plugin .display_none {
+    display: none; }
+  .window_plugin .item_title {
+    font-size: 12px;
+    word-wrap: break-word;
+    text-align: center; }
+  .window_plugin .div_content_text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+  .window_plugin .id_el {
+    font-size: 14px;
+    text-align: center; }
+  .window_plugin .text_el {
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer; }
+    .window_plugin .text_el a {
+      font-size: 14px; }
+  .window_plugin .item_el {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #acacac; }
+  .window_plugin li a:focus {
+    outline: none; }
+  .window_plugin .form_enter .form_enter_item {
+    margin-bottom: 15px; }
+  .window_plugin .block_task {
+    max-height: 400px; }
+    .window_plugin .block_task .task_item {
+      display: inline-block;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #acacac; }
+  .window_plugin .settings_item {
+    max-height: 400px;
+    padding-top: 30px;
+    padding-bottom: 15px; }
+  .window_plugin #task {
+    max-height: 400px;
+    overflow-y: auto; }
+
+.uxcrowd_menu {
+  position: fixed;
+  height: 50px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.2); }
+  .uxcrowd_menu .uxcrowd_tool {
+    width: 30%;
+    height: 100%;
+    display: inline-block; }
+  .uxcrowd_menu .uxcrowd_step {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    top: 0; }
+    .uxcrowd_menu .uxcrowd_step .uxcrowd_list_step .uxcrowd_item_step .uxcrowd_item_step_description {
+      width: 50%;
+      display: inline-block; }
+    .uxcrowd_menu .uxcrowd_step .uxcrowd_list_step .uxcrowd_item_step .uxcrowd_item_tool_step {
+      width: 50%;
+      display: inline-block; }
+
+/*# sourceMappingURL=style.css.map */

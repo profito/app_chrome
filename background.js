@@ -120,13 +120,13 @@ function onAccessApproved(chromeMediaSourceId) {
 
             if (enableTabAudio || enableMicrophone) {
                 if (audioBitsPerSecond) {
-                    options.audioBitsPerSecond = audioBitsPerSecond;
+                    options.audioBitsPerSecond = audioBitsPerSecond * 1000;
                 }
                 if (videoBitsPerSecond) {
-                    options.videoBitsPerSecond = videoBitsPerSecond;
+                    options.videoBitsPerSecond = videoBitsPerSecond * 1000;
                 }
             } else if (videoBitsPerSecond) {
-                options.bitsPerSecond = videoBitsPerSecond;
+                options.bitsPerSecond = videoBitsPerSecond * 1000;
             }
         }
 
@@ -199,6 +199,9 @@ function stopScreenRecording() {
     isRecording = false;
 
     recorder.stopRecording(function () {
+
+        convertElement(recorder.blob);
+
         invokeSaveAsDialog(recorder.blob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
 
         setTimeout(function () {
@@ -563,8 +566,8 @@ function getUserConfigs() {
 
         //HD
         aspectRatio = 1.77;
-        resolutions.maxWidth = 1280;
-        resolutions.maxHeight = 720;
+        resolutions.maxWidth = 1360;
+        resolutions.maxHeight = 768;
 
         //FPS
         videoMaxFrameRates = 24;
@@ -577,7 +580,7 @@ function getUserConfigs() {
 
 
         //Видео Кодек
-        videoCodec = 'VP8';
+        videoCodec = 'VP9';
 
 
         if (enableMicrophone) {
