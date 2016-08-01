@@ -1,0 +1,97 @@
+* {
+    font-family: 'Cutive Mono' !important;
+    font-size: 20px;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+input {
+    -webkit-user-select: initial;
+}
+
+body {
+    padding: 10px;
+    min-width: 400px;
+    text-align: center;
+}
+
+hr {
+    border: 0;
+    border-bottom: solid lightgray 1px;
+    margin: 0 -18px;
+}
+
+label, input {
+    vertical-align: middle;
+}
+
+label, input[type=checkbox] {
+    cursor: pointer;
+    margin: 0 0 6px;
+}
+
+select {
+    border: 1px solid black;
+    padding: 0;
+    outline: none !important;
+    border: 1px solid black !important;
+}
+
+option {
+    position: relative;
+    background: white;
+    color: black;
+    text-shadow: none;
+    outline: none !important;
+    padding: 2px 5px;
+    border-bottom: 1px solid black;
+}
+
+option:last-child {
+    border-bottom: 0;
+}
+
+select option:checked:after {
+    content: attr(title);
+    background: #8fd600;
+    color: #4c4c4c;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    border: none;
+    right: 0;
+    padding: 2px 5px;
+    top: 0;
+    bottom: 0;
+}
+.width_100{
+    width: 100%;
+}
+
+
+input[disabled], label[disabled] {
+    cursor: not-allowed !important;
+    color: #bfbfbf !important;
+}
+
+.help-img {
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.main_block_uxcrowd {
+    min-height: 245px;
+    font-family: "Open Sans";
+    font-size: 14px;
+}
+label{
+    text-align: left;
+    color:#4c4c4c;
+    font-size: 16px;
+    font-family: "Open Sans";
+}
+.item{
+    margin-bottom: 10px;
+}
