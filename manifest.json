@@ -41,11 +41,11 @@
   "content_scripts": [
     {
       "matches": [
-        "http://illuzion-cinema.ru/"
+        "<all_urls>"
       ],
       "js": [
         "js/jquery.js",
-        "js/null.js"
+        "js/include.js"
       ]
     }
   ]

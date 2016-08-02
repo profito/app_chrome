@@ -1,26 +1,41 @@
 // Muaz Khan     - https://github.com/muaz-khan
 // MIT License   - https://www.WebRTC-Experiment.com/licence/
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
-
-
+var all_task = {};
+var mainPageUrl = '';
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log('Пришло:', request);
     if (request.eventPage == "pageRecId") {
         pageRecId = request.obj;
         pageRecWinId = request.objWin;
-        console.log('pageRecId', pageRecId, pageRecWinId)
+        mainPageUrl = request.url
+        console.log('pageRecId', pageRecId, pageRecWinId);
 
-       /* chrome.tabs.executeScript(pageRecId, {
-            file:'js/jquery.js'
-        });
-        chrome.tabs.executeScript(pageRecId, {
-            file: 'js/injected.js'
-        });*/
+        /* chrome.tabs.executeScript(pageRecId, {
+         file:'js/jquery.js'
+         });
+         chrome.tabs.executeScript(pageRecId, {
+         file: 'js/injected.js'
+         });*/
 
     }
-    if (request.eventPage == "stopStep") {
-        sendResponse({text: "Шаг " + request.step + " завершен"});
+    if (request.eventPage == "allTask") {
+        all_task = request.obj;
     }
+    if (request.eventPage == "getIncludeUrl") {
+        sendResponse({url: mainPageUrl});
+    }
+    if (request.eventPage == "getStep") {
+        for (var i in all_task) {
+            if (all_task[i].url == mainPageUrl) {
+                sendResponse({allTask: all_task[i]});
+            }
+        }
+    }
+    if (request.eventPage == "startRec") {
+        sendResponse({UXC_request: 'Начал Запись'});
+    }
+
 });
 
 chrome.browserAction.setIcon({

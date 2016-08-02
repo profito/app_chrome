@@ -2,7 +2,9 @@ var config = {
     user: {
         authorization: false
     },
-    text_error_not_authorization: 'Пожалуйста, авторизуйтесь'
+    text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
+    step: {},
+    tabId: 0
 };
 
 function init() {
@@ -26,11 +28,12 @@ function init() {
             });
             $('.href_url').click(function (e) {
                 e.preventDefault();
-                openPage($(this).data('url'))
-
+                openPage($(this).data('url'));
             });
+            setBackground("allTask", all_task);
             updateView();
-        },
+        }
+        ,
         error: function (data) {
             //TODO-front: добавить проверку других ошибок
             if (data.status == 401) {
@@ -39,7 +42,8 @@ function init() {
             $('#task').text(config.text_error_not_authorization);
             updateView();
         }
-    });
+    })
+    ;
 }
 
 function updateView() {
@@ -56,12 +60,13 @@ function updateView() {
 function openPage(url) {
     if (url.split(':')[0] == 'http' || url.split(':')[0] == 'https') {
         chrome.tabs.create({url: url}, function (tabs) {
-            setBackground("pageRecId", tabs.id, tabs.windowId);
+            config.tabId = tabs.id;
+            setBackground("pageRecId", tabs.id, tabs.windowId, url);
         });
     } else {
-        chrome.tabs.create({url: 'http://'+url}, function (tabs) {
-            setBackground("pageRecId", tabs.id, tabs.windowId);
-            setDom('addEvent()')
+        chrome.tabs.create({url: 'http://' + url}, function (tabs) {
+            config.tabId = tabs.id;
+            setBackground("pageRecId", tabs.id, tabs.windowId, url);
         });
     }
 }
@@ -69,15 +74,13 @@ function openPage(url) {
 init();
 
 // Работа с DOM (injected.js)
-function setDom(code) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.tabs.executeScript(tab.id, {code: code});
-    });
+function setDom(code, tabId) {
+    chrome.tabs.executeScript(tabId, {code: code});
 }
 //Работа с Background.js
-function setBackground(eventPage, object, objWin) {
-    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin}, function (obj) {
-        console.log('Ответ от фоновой странице:', obj.text);
+function setBackground(eventPage, object, objWin, url) {
+    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin, url: url}, function (obj) {
+        console.log('Ответ от фоновой странице:', obj);
         return obj;
     });
 }

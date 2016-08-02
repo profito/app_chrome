@@ -14,9 +14,7 @@ $.get(chrome.extension.getURL('/js/injected.js'),
 
 setTimeout(setImg, 1000);
 function setImg() {
-
-
-    $.get(chrome.extension.getURL('/js/null.js'),
+    $.get(chrome.extension.getURL('/js/include.js'),
         function (data) {
             var script = document.createElement("div");
             script.setAttribute("type", "text/javascript");
