@@ -23,7 +23,6 @@ body {
 .window_plugin {
   width: 100%;
   padding-bottom: 15px;
-  padding-top: 15px;
   display: inline-block; }
   .window_plugin * {
     font-family: 'Roboto', sans-serif; }
@@ -66,8 +65,10 @@ body {
     padding-top: 30px;
     padding-bottom: 15px; }
   .window_plugin #task {
-    max-height: 400px;
+    max-height: 100%;
     overflow-y: auto; }
+  .window_plugin .popover .popover-title {
+    display: none; }
 
 .uxcrowd_menu {
   position: fixed;

@@ -33,9 +33,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         }
     }
     if (request.eventPage == "startRec") {
-        sendResponse({UXC_request: 'Начал Запись'});
+        getUserConfigs();
+        sendResponse({UXC_request: true});
     }
-
+    if (request.eventPage == "pauseRec") {
+        recorder.pauseRecording();
+        sendResponse({UXC_request: true});
+    }
+    if (request.eventPage == "stopRec") {
+        getUserConfigs();
+        sendResponse({UXC_request: true});
+    }
 });
 
 chrome.browserAction.setIcon({

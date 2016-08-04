@@ -8,7 +8,6 @@ var config = {
 };
 
 function init() {
-    console.log('1');
     $.ajax({
         type: "GET",
         url: "http://uxcrowd.ru:8081/api/tester/new-tasks",
@@ -32,8 +31,7 @@ function init() {
             });
             setBackground("allTask", all_task);
             updateView();
-        }
-        ,
+        },
         error: function (data) {
             //TODO-front: добавить проверку других ошибок
             if (data.status == 401) {
@@ -42,20 +40,18 @@ function init() {
             $('#task').text(config.text_error_not_authorization);
             updateView();
         }
-    })
-    ;
+    });
 }
 
 function updateView() {
     if (config.user.authorization) {
         $('.authorization').show();
-        $('.not_authorization').hide();
+        $('.loader').hide();
     } else {
-        $('.authorization').hide();
         $('.not_authorization').show();
+        $('.loader').hide();
     }
 }
-
 
 function openPage(url) {
     if (url.split(':')[0] == 'http' || url.split(':')[0] == 'https') {
@@ -86,10 +82,8 @@ function setBackground(eventPage, object, objWin, url) {
 }
 
 var runtimePort;
-
 chrome.runtime.onConnect.addListener(function (port) {
     runtimePort = port;
-
     runtimePort.onMessage.addListener(function (message) {
         if (!message || !message.messageFromContentScript1234) {
             console.log('message.messageFromContentScript1234')

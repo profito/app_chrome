@@ -1,0 +1,139 @@
+body {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  width: 320px;
+  border: none;
+}
+
+.popap_ux {
+  position: fixed;
+  display: inline-block;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  width: 300px;
+  min-height: 50px;
+  h2 {
+    color: #fff;
+  }
+  button {
+    width: 50%;
+  }
+}
+
+.window_plugin {
+  width: 100%;
+  padding-bottom: 15px;
+  display: inline-block;
+  * {
+    font-family: 'Roboto', sans-serif;
+  }
+  .display_none {
+    display: none;
+  }
+  .item_title {
+    font-size: 12px;
+    word-wrap: break-word;
+    text-align: center;
+  }
+  .div_content_text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .id_el {
+    font-size: 14px;
+    text-align: center;
+  }
+  .text_el {
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    a {
+      font-size: 14px;
+    }
+  }
+  .item_el {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #acacac;
+  }
+  li {
+    a:focus {
+      outline: none;
+    }
+  }
+  .form_enter {
+    .form_enter_item {
+      margin-bottom: 15px;
+    }
+  }
+  .block_task {
+    max-height: 400px;
+    .task_item {
+      display: inline-block;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #acacac;
+
+    }
+  }
+  .settings_item {
+    max-height: 400px;
+    padding-top: 30px;
+    padding-bottom: 15px;
+  }
+  #task {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  .popover {
+    .popover-title {
+      display: none;
+    }
+  }
+}
+
+.uxcrowd_menu {
+  position: fixed;
+  height: 50px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.2);
+  .uxcrowd_tool {
+    width: 30%;
+    height: 100%;
+    display: inline-block;
+    .uxcrowd_tool_start {
+    }
+    .uxcrowd_tool_stop {
+    }
+  }
+  .uxcrowd_step {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    .uxcrowd_list_step {
+      .uxcrowd_item_step {
+        .uxcrowd_item_step_description {
+          width: 50%;
+          display: inline-block;
+        }
+        .uxcrowd_item_tool_step {
+          width: 50%;
+          display: inline-block;
+          .uxcrowd_item_step_start {
+          }
+          .uxcrowd_item_step_stop {
+          }
+        }
+      }
+    }
+  }
+}

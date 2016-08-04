@@ -1,21 +1,28 @@
 chrome.runtime.sendMessage({eventPage: "getIncludeUrl"}, function (obj) {
     if (obj.url) {
-        obj.url = obj.url.split('www.')[1] || obj.url;
-        obj.url = obj.url.split('https://')[1] || obj.url;
-        obj.url = obj.url.split('http://')[1] || obj.url;
-        var locUrl = window.location.href;
-        locUrl = window.location.href.split('www.')[1] || locUrl;
-        locUrl = window.location.href.split('https://')[1] || locUrl;
-        locUrl = window.location.href.split('http://')[1] || locUrl;
-        while ((obj.url.charAt(obj.url.length - 1) == '/') ||
-        (obj.url.charAt(obj.url.length - 1) == '.')) {
-            obj.url = obj.url.substring(0, obj.url.length - 1);
+        var newURL = obj.url;
+        newURL = newURL.split('www.')[1] ? newURL.split('www.')[1] : newURL;
+        newURL = newURL.split('https://')[1] ? newURL.split('https://')[1] : newURL;
+        newURL = newURL.split('http://')[1] ? newURL.split('http://')[1] : newURL;
+
+        while ((newURL.charAt(newURL.length - 1) == '/') ||
+        (newURL.charAt(newURL.length - 1) == ' ') ||
+        (newURL.charAt(newURL.length - 1) == '.')) {
+            newURL = newURL.substring(0, newURL.length - 1);
         }
+
+        var locUrl = window.location.href;
+        locUrl = locUrl.split('www.')[1] ? locUrl.split('www.')[1] : locUrl;
+        locUrl = locUrl.split('https://')[1] ? locUrl.split('https://')[1] : locUrl;
+        locUrl = locUrl.split('http://')[1] ? locUrl.split('http://')[1] : locUrl;
+
         while ((locUrl.charAt(locUrl.length - 1) == '/') ||
+        (locUrl.charAt(locUrl.length - 1) == ' ') ||
         (locUrl.charAt(locUrl.length - 1) == '.')) {
             locUrl = locUrl.substring(0, locUrl.length - 1);
         }
-        if (locUrl == obj.url) {
+
+        if (locUrl == newURL) {
             $.get('https://xn--b1ab8aj6d.xn--p1ai/test/include/tmpl.html',
                 function (data) {
                     document.getElementsByTagName("body")[0].innerHTML = document.getElementsByTagName("body")[0].innerHTML + data;
