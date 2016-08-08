@@ -4,6 +4,10 @@ body {
   outline: none;
   width: 320px;
   border: none;
+  border: 4px solid #5ec700;
+  float: left;
+  border-radius: 4px;
+
 }
 
 .popap_ux {
@@ -44,6 +48,12 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .header_popup {
+    font-size: 16px;
+    margin-top: 15px;
+    line-height: 16px;
+  }
+  .id_el *,
   .id_el {
     font-size: 14px;
     text-align: center;
@@ -54,6 +64,7 @@ body {
     cursor: pointer;
     a {
       font-size: 14px;
+      color: #3775D6
     }
   }
   .item_el {

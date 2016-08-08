@@ -21,6 +21,7 @@
     "default_popup": "popup.html",
     "default_title": "Record Screen"
   },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "icons": {
     "16": "images/main-icon.png",
     "22": "images/main-icon.png",
@@ -30,6 +31,7 @@
   },
   "permissions": [
     "desktopCapture",
+    "cookies",
     "storage",
     "tabs",
     "activeTab",

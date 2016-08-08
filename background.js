@@ -1,26 +1,76 @@
 // Muaz Khan     - https://github.com/muaz-khan
 // MIT License   - https://www.WebRTC-Experiment.com/licence/
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
+console.log('background.js')
+
 var all_task = {};
+var config = {
+    'csrf_token': '',
+    '_ym_uid': ''
+};
 var mainPageUrl = '';
+var localSaveBlob = '';
+
+
+function getToken() {
+    function getCookiesUXC(domain, name, callback) {
+        chrome.cookies.get({"url": domain, "name": name}, function (cookie) {
+            if (callback) {
+                callback(cookie.value);
+            }
+        });
+    }
+    getCookiesUXC("http://uxcrowd.ru:8081", "CSRF-TOKEN", function (csrf_token) {
+        config.csrf_token = csrf_token;
+    });
+    getCookiesUXC("http://uxcrowd.ru:8081", "_ym_uid", function (_ym_uid) {
+        config._ym_uid = _ym_uid;
+    });
+}
+
+
+//TODO: переписать на получение от клиента
+var step = [{
+    orderNum: '1',
+    stepId: '1',
+    startTime: 'Mon Aug 08 2016 18:14:54 GMT+0300 (MSK)'
+}, {
+    orderNum: '2',
+    stepId: '1',
+    startTime: 'Mon Aug 08 2016 18:14:54 GMT+0300 (MSK)'
+}];
+
+
+function saveVideo(blob) {
+    var formData = new FormData();
+    formData.append('task-id', 1);
+    formData.append('name', 'file');
+    formData.append('tag-dto', step);
+    formData.append('video-file', blob);
+    formData.append('data', new Date());
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://uxcrowd.ru:8081/api/video-upload', true);
+    xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
+    xhr.setRequestHeader('Content-Type', 'multipart/mixed');
+    xhr.onload = function (e) {
+        console.log(e);
+    };
+    xhr.send(formData);
+}
+
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log('Пришло:', request);
     if (request.eventPage == "pageRecId") {
         pageRecId = request.obj;
         pageRecWinId = request.objWin;
-        mainPageUrl = request.url
+        mainPageUrl = request.url;
         console.log('pageRecId', pageRecId, pageRecWinId);
-
-        /* chrome.tabs.executeScript(pageRecId, {
-         file:'js/jquery.js'
-         });
-         chrome.tabs.executeScript(pageRecId, {
-         file: 'js/injected.js'
-         });*/
-
     }
     if (request.eventPage == "allTask") {
         all_task = request.obj;
+        getToken();
     }
     if (request.eventPage == "getIncludeUrl") {
         sendResponse({url: mainPageUrl});
@@ -45,7 +95,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({UXC_request: true});
     }
 });
-
 chrome.browserAction.setIcon({
     path: 'images/main-icon.png'
 });
@@ -236,6 +285,10 @@ function askToStopExternalStreams() {
     }
 }
 
+function getLocalBlob() {
+    invokeSaveAsDialog(localSaveBlob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
+}
+
 var peer;
 
 function stopScreenRecording() {
@@ -245,7 +298,12 @@ function stopScreenRecording() {
 
         convertElement(recorder.blob);
 
-        invokeSaveAsDialog(recorder.blob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
+        saveVideo(recorder.blob);
+
+        //сохранение видео не клиент
+        //invokeSaveAsDialog(recorder.blob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
+
+        localSaveBlob = recorder.blob;
 
         setTimeout(function () {
             setDefaults();

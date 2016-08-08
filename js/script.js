@@ -4,7 +4,9 @@ var config = {
     },
     text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
     step: {},
-    tabId: 0
+    tabId: 0,
+    csrf_token: '',
+    _ym_uid: ''
 };
 
 function init() {
@@ -17,7 +19,7 @@ function init() {
             for (var task in all_task) {
                 task_dom += "<div class='col-xs-12'>" +
                     "<div class='row item_el'>" +
-                    "<div class='col-xs-2 id_el'>" + all_task[task].id + "</div>" +
+                    "<div class='col-xs-2 id_el'><div class='row'>" + all_task[task].id + "</div></div>" +
                     "<div class='col-xs-10 text_el div_content_text' data-placement='bottom' data-toggle='popover' data-trigger='hover' data-content='<span class=\"item_title\">" + all_task[task].url + "</span>' data-original-title='' title=''><a class='href_url' href='" + all_task[task].url + "' data-url='" + all_task[task].url + "'>" + all_task[task].url + "</a></div>" +
                     "</div></div>";
             }
@@ -41,6 +43,7 @@ function init() {
             updateView();
         }
     });
+
 }
 
 function updateView() {
