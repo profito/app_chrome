@@ -10,7 +10,7 @@ var config = {
 };
 var mainPageUrl = '';
 var localSaveBlob = '';
-
+var urlUXC = 'http://localhost:9797';
 
 function getToken() {
     function getCookiesUXC(domain, name, callback) {
@@ -20,10 +20,11 @@ function getToken() {
             }
         });
     }
-    getCookiesUXC("http://uxcrowd.ru:8081", "CSRF-TOKEN", function (csrf_token) {
+
+    getCookiesUXC(urlUXC, "CSRF-TOKEN", function (csrf_token) {
         config.csrf_token = csrf_token;
     });
-    getCookiesUXC("http://uxcrowd.ru:8081", "_ym_uid", function (_ym_uid) {
+    getCookiesUXC(urlUXC, "_ym_uid", function (_ym_uid) {
         config._ym_uid = _ym_uid;
     });
 }
@@ -31,32 +32,127 @@ function getToken() {
 
 //TODO: переписать на получение от клиента
 var step = [{
-    orderNum: '1',
-    stepId: '1',
-    startTime: 'Mon Aug 08 2016 18:14:54 GMT+0300 (MSK)'
+    orderNum: '3602',
+    stepId: '4',
+    startTime: '2016-07-14 16:26:05.6112016-07-14 16:26:05.611'
 }, {
-    orderNum: '2',
-    stepId: '1',
-    startTime: 'Mon Aug 08 2016 18:14:54 GMT+0300 (MSK)'
-}];
+    orderNum: '3602',
+    stepId: '5',
+    startTime: '2016-07-14 16:27:05.6112016-07-14 16:26:05.611'
+}, {
+    orderNum: '3602',
+    stepId: '6',
+    startTime: '2016-07-14 16:28:05.6112016-07-14 16:26:05.611'
+}
+];
 
 
 function saveVideo(blob) {
+    /*var boundary = Math.random().toString().substr(2);
+
+     var formData = new FormData();
+     formData.append('task-id', '3602');
+     formData.append('name', 'file');
+     formData.append('tag-dto', step);
+     formData.append('video-file', blob);
+
+
+     var xhr = new XMLHttpRequest();
+
+     xhr.open('POST', urlUXC + '/api/video-upload/', true);
+     xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
+     xhr.setRequestHeader('Content-Type', 'multipart/mixed; boundary=' + boundary);
+     xhr.onload = function (e) {
+     console.log(e);
+     };
+
+
+     xhr.send(formData);
+     */
     var formData = new FormData();
-    formData.append('task-id', 1);
-    formData.append('name', 'file');
-    formData.append('tag-dto', step);
     formData.append('video-file', blob);
-    formData.append('data', new Date());
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://uxcrowd.ru:8081/api/video-upload', true);
+
+    xhr.open("POST", urlUXC + '/api/video-upload/', true);
     xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-    xhr.setRequestHeader('Content-Type', 'multipart/mixed');
-    xhr.onload = function (e) {
-        console.log(e);
-    };
-    xhr.send(formData);
+
+    var boundary = '---------------------------';
+    boundary += Math.floor(Math.random() * 32768);
+    boundary += Math.floor(Math.random() * 32768);
+    boundary += Math.floor(Math.random() * 32768);
+    xhr.setRequestHeader("Content-Type", 'multipart/mixed; boundary=' + boundary);
+    var body = '';
+    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="task-id"' + '\r\n';
+    body += "Content-Type: application/json\r\n\r\n";
+    body += '3602';
+    body += '\r\n'
+    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="name"' + '\r\n';
+    body += "Content-Type: application/json\r\n\r\n";
+    body += 'file';
+    body += '\r\n'
+    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="tag-dto"' + '\r\n';
+    body += "Content-Type: application/json\r\n\r\n";
+    body += JSON.stringify(step);
+    body += '\r\n'
+    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="video-file"' + '\r\n';
+    body += "Content-Type: video/webm\r\n\r\n";
+    body += formData;
+    body += '\r\n'
+    body += '--' + boundary + '--';
+    xhr.setRequestHeader('Content-length', body.length);
+    xhr.onload = function () {
+    }
+    xhr.send(body);
+
+
+    //
+    // var formData = new FormData();
+    // formData.append('task-id', '3602');
+    // formData.append('name', 'file');
+    // formData.append('tag-dto', step);
+    // formData.append('video-file', blob);
+    /*  var data = JSON.stringify({
+     'task-id': 3602,
+     'name': 'file',
+     'tag-dto': step,
+     'video-file': blob
+     });
+     // */
+//     $.ajax({
+//         url: urlUXC + '/api/video-upload/',
+//         type: 'POST',
+//         data: formData,
+//         dataType: 'multipart/mixed',
+//         headers: {
+//             "X-CSRF-Token": config.csrf_token
+//         },
+//         success: function (result) {
+//
+//         },
+//         error: function (result) {
+//
+//         }
+//     });
+
+    /* var formData = new FormData();
+     formData.append('task-id', '3602');
+     formData.append('name', 'file');
+     formData.append('tag-dto', step);
+     formData.append('video-file', blob);
+
+     $.ajax({
+     url: urlUXC + '/api/video-upload/',
+     type: "POST",
+     data: formData,
+     contentType: "multipart/form-data",
+     headers: {
+     "X-CSRF-Token": config.csrf_token
+     },
+     success: function (data) {
+     alert(data);
+     }
+     });*/
 }
 
 

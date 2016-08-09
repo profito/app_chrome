@@ -6,13 +6,15 @@ var config = {
     step: {},
     tabId: 0,
     csrf_token: '',
-    _ym_uid: ''
+    _ym_uid: '',
+    url: 'http://localhost:9797'//http://192.168.2.121:9797/
+
 };
 
 function init() {
     $.ajax({
         type: "GET",
-        url: "http://uxcrowd.ru:8081/api/tester/new-tasks",
+        url: config.url + "/api/tester/new-tasks",
         success: function (all_task) {
             config.user.authorization = true;
             var task_dom = "";

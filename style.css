@@ -31,6 +31,8 @@ body {
     font-family: 'Roboto', sans-serif; }
   .window_plugin .display_none {
     display: none; }
+  .window_plugin .btn {
+    margin-top: 15px; }
   .window_plugin .item_title {
     font-size: 12px;
     word-wrap: break-word;
