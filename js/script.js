@@ -7,7 +7,8 @@ var config = {
     tabId: 0,
     csrf_token: '',
     _ym_uid: '',
-    url: 'http://localhost:9797'//http://192.168.2.121:9797/
+    url: 'http://localhost:9797'
+    //url: 'http://192.168.2.121:9797/'
 
 };
 

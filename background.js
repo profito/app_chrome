@@ -1,16 +1,18 @@
 // Muaz Khan     - https://github.com/muaz-khan
 // MIT License   - https://www.WebRTC-Experiment.com/licence/
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
-console.log('background.js')
+console.log('background.js');
 
 var all_task = {};
 var config = {
     'csrf_token': '',
-    '_ym_uid': ''
+    '_ym_uid': '',
+    'order_id': ''
 };
 var mainPageUrl = '';
 var localSaveBlob = '';
 var urlUXC = 'http://localhost:9797';
+//var urlUXC = 'http://192.168.2.121:9797';
 
 function getToken() {
     function getCookiesUXC(domain, name, callback) {
@@ -32,53 +34,42 @@ function getToken() {
 
 //TODO: переписать на получение от клиента
 var step = [{
-    orderNum: 3602,
-    stepId: 4,
-    startTime: new Date()
+    'orderNum': 3602,
+    'stepId': 4,
+    'startTime': '00:00:00'
 }, {
-    orderNum: 3602,
-    stepId: 5,
-    startTime: new Date()
+    'orderNum': 3602,
+    'stepId': 5,
+    'startTime': '00:01:00'
 }, {
-    orderNum: 3602,
-    stepId: 6,
-    startTime: new Date()
+    'orderNum': 3602,
+    'stepId': 6,
+    'startTime': '00:02:00'
 }];
 
+function saveVideo() {
+    $.ajax({
+        url: urlUXC + '/api/tester/create-task',
+        data: {orderId: config.order_id},
+        success: function (data) {
 
-function saveVideo(blob) {
-    var formData = new FormData();
-    formData.append('video-file', blob);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", urlUXC + '/api/video-upload/', true);
-    xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-    var boundary = '---------------------------';
-    boundary += Math.floor(Math.random() * 32768);
-    boundary += Math.floor(Math.random() * 32768);
-    boundary += Math.floor(Math.random() * 32768);
-    xhr.setRequestHeader("Content-Type", 'multipart/mixed; boundary=' + boundary);
-    var body = '';
-    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="task-id"' + '\r\n';
-    body += "Content-Type: application/json\r\n\r\n";
-    body += '3602';
-    body += '\r\n';
-    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="name"' + '\r\n';
-    body += "Content-Type: application/json\r\n\r\n";
-    body += 'file';
-    body += '\r\n';
-    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="tag-dto"' + '\r\n';
-    body += "Content-Type: application/json\r\n\r\n";
-    body += JSON.stringify(step);
-    body += '\r\n';
-    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="video-file"; filename="blob"' + '\r\n';
-    body += "Content-Type: video/webm; codecs=vp9\r\n\r\n";
-    body += formData.get('video-file');
-    body += '\r\n';
-    body += '--' + boundary + '--';
-    xhr.setRequestHeader('Content-length', body.length);
-    xhr.onload = function () {
-    };
-    xhr.send(body);
+            var formData = new FormData();
+
+            formData.append('task-id', data.id);
+            formData.append('video-file', localSaveBlob);
+            formData.append('name', formData.get('video-file').name + '.webm');
+            //formData.append('tag-dto', JSON.stringify(step));
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", urlUXC + '/api/video-upload/', true);
+            xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
+            // xhr.setRequestHeader('Accept', 'application/octet-stream, text/plain;charset=UTF-8, text/plain;charset=ISO-8859-1, application/xml, text/xml, application/x-www-form-urlencoded, application/*+xml, multipart/form-data, application/json;charset=UTF-8, application/*+json;charset=UTF-8, */*');
+            // xhr.onload = function (data) {};
+            xhr.send(formData);
+        },
+        dataType: 'json'
+    });
 }
 
 
@@ -101,6 +92,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         for (var i in all_task) {
             if (all_task[i].url == mainPageUrl) {
                 sendResponse({allTask: all_task[i]});
+                config.order_id = all_task[i].id;
+                config.order_id = all_task[i].id;
+
+                console.log(all_task[i])
             }
         }
     }
@@ -320,7 +315,7 @@ function stopScreenRecording() {
 
         convertElement(recorder.blob);
 
-        saveVideo(recorder.blob);
+        saveVideo();
 
         //сохранение видео не клиент
         //invokeSaveAsDialog(recorder.blob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
