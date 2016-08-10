@@ -32,51 +32,26 @@ function getToken() {
 
 //TODO: переписать на получение от клиента
 var step = [{
-    orderNum: '3602',
-    stepId: '4',
-    startTime: '2016-07-14 16:26:05.6112016-07-14 16:26:05.611'
+    orderNum: 3602,
+    stepId: 4,
+    startTime: new Date()
 }, {
-    orderNum: '3602',
-    stepId: '5',
-    startTime: '2016-07-14 16:27:05.6112016-07-14 16:26:05.611'
+    orderNum: 3602,
+    stepId: 5,
+    startTime: new Date()
 }, {
-    orderNum: '3602',
-    stepId: '6',
-    startTime: '2016-07-14 16:28:05.6112016-07-14 16:26:05.611'
-}
-];
+    orderNum: 3602,
+    stepId: 6,
+    startTime: new Date()
+}];
 
 
 function saveVideo(blob) {
-    /*var boundary = Math.random().toString().substr(2);
-
-     var formData = new FormData();
-     formData.append('task-id', '3602');
-     formData.append('name', 'file');
-     formData.append('tag-dto', step);
-     formData.append('video-file', blob);
-
-
-     var xhr = new XMLHttpRequest();
-
-     xhr.open('POST', urlUXC + '/api/video-upload/', true);
-     xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-     xhr.setRequestHeader('Content-Type', 'multipart/mixed; boundary=' + boundary);
-     xhr.onload = function (e) {
-     console.log(e);
-     };
-
-
-     xhr.send(formData);
-     */
     var formData = new FormData();
     formData.append('video-file', blob);
-
     var xhr = new XMLHttpRequest();
-
     xhr.open("POST", urlUXC + '/api/video-upload/', true);
     xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-
     var boundary = '---------------------------';
     boundary += Math.floor(Math.random() * 32768);
     boundary += Math.floor(Math.random() * 32768);
@@ -86,73 +61,24 @@ function saveVideo(blob) {
     body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="task-id"' + '\r\n';
     body += "Content-Type: application/json\r\n\r\n";
     body += '3602';
-    body += '\r\n'
+    body += '\r\n';
     body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="name"' + '\r\n';
     body += "Content-Type: application/json\r\n\r\n";
     body += 'file';
-    body += '\r\n'
+    body += '\r\n';
     body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="tag-dto"' + '\r\n';
     body += "Content-Type: application/json\r\n\r\n";
     body += JSON.stringify(step);
-    body += '\r\n'
-    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="video-file"' + '\r\n';
-    body += "Content-Type: video/webm\r\n\r\n";
-    body += formData;
-    body += '\r\n'
+    body += '\r\n';
+    body += '--' + boundary + '\r\n' + 'Content-Disposition: form-data; name="video-file"; filename="blob"' + '\r\n';
+    body += "Content-Type: video/webm; codecs=vp9\r\n\r\n";
+    body += formData.get('video-file');
+    body += '\r\n';
     body += '--' + boundary + '--';
     xhr.setRequestHeader('Content-length', body.length);
     xhr.onload = function () {
-    }
+    };
     xhr.send(body);
-
-
-    //
-    // var formData = new FormData();
-    // formData.append('task-id', '3602');
-    // formData.append('name', 'file');
-    // formData.append('tag-dto', step);
-    // formData.append('video-file', blob);
-    /*  var data = JSON.stringify({
-     'task-id': 3602,
-     'name': 'file',
-     'tag-dto': step,
-     'video-file': blob
-     });
-     // */
-//     $.ajax({
-//         url: urlUXC + '/api/video-upload/',
-//         type: 'POST',
-//         data: formData,
-//         dataType: 'multipart/mixed',
-//         headers: {
-//             "X-CSRF-Token": config.csrf_token
-//         },
-//         success: function (result) {
-//
-//         },
-//         error: function (result) {
-//
-//         }
-//     });
-
-    /* var formData = new FormData();
-     formData.append('task-id', '3602');
-     formData.append('name', 'file');
-     formData.append('tag-dto', step);
-     formData.append('video-file', blob);
-
-     $.ajax({
-     url: urlUXC + '/api/video-upload/',
-     type: "POST",
-     data: formData,
-     contentType: "multipart/form-data",
-     headers: {
-     "X-CSRF-Token": config.csrf_token
-     },
-     success: function (data) {
-     alert(data);
-     }
-     });*/
 }
 
 
