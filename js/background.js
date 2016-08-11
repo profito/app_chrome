@@ -3,33 +3,12 @@
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
 console.log('background.js');
 
+
 var all_task = {};
-var config = {
-    'csrf_token': '',
-    '_ym_uid': '',
-    'order_id': ''
-};
+var config = {};
 var mainPageUrl = '';
 var localSaveBlob = '';
-var urlUXC = 'http://localhost:9797';
-//var urlUXC = 'http://192.168.2.121:9797';
 
-function getToken() {
-    function getCookiesUXC(domain, name, callback) {
-        chrome.cookies.get({"url": domain, "name": name}, function (cookie) {
-            if (callback) {
-                callback(cookie.value);
-            }
-        });
-    }
-
-    getCookiesUXC(urlUXC, "CSRF-TOKEN", function (csrf_token) {
-        config.csrf_token = csrf_token;
-    });
-    getCookiesUXC(urlUXC, "_ym_uid", function (_ym_uid) {
-        config._ym_uid = _ym_uid;
-    });
-}
 
 //TODO: переписать на получение от клиента
 var step = [{
@@ -72,7 +51,21 @@ function saveVideo() {
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log('Пришло:', request);
+    if (request.eventPage == "config") {
+        config = request.obj;
+        config.uxc_debugger = function (name) {
+            if (this.debug) {
+                console.log(' ');
+                console.log('---Start Debag---');
+                console.log('Переменная(ые):', name);
+                for (var i = 1; i < arguments.length; i++) {
+                    console.log(arguments[i]);
+                }
+                console.log('---Stop Debag---');
+                console.log(' ');
+            }
+        }
+    }
     if (request.eventPage == "pageRecId") {
         pageRecId = request.obj;
         pageRecWinId = request.objWin;
@@ -80,7 +73,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "allTask") {
         all_task = request.obj;
-        getToken();
     }
     if (request.eventPage == "getIncludeUrl") {
         sendResponse({url: mainPageUrl});
@@ -89,7 +81,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         for (var i in all_task) {
             if (all_task[i].url == mainPageUrl) {
                 sendResponse({allTask: all_task[i]});
-                config.order_id = all_task[i].id;
                 config.order_id = all_task[i].id;
             }
         }
@@ -104,6 +95,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "stopRec") {
         getUserConfigs();
+        sendResponse({UXC_request: true});
+    }
+    if (request.eventPage == "setStep") {
+        config.uxc_debugger('Шаги',request.step)
         sendResponse({UXC_request: true});
     }
 });
