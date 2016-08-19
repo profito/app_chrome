@@ -3,44 +3,64 @@
 // Source Code   - https://github.com/muaz-khan/Chrome-Extensions
 console.log('background.js');
 
-
 var all_task = {};
-var config = {};
+var config = {
+    user: {
+        authorization: false
+    },
+    order_id: localStorage.getItem('orderId') || '',
+    text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
+    text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
+    tabId: 0,
+    url: 'https://lk.uxcrowd.ru:8081',
+    //url: 'http://localhost:9797',
+    //url: 'http://192.168.2.121:9797/',
+    debug: true
+};
 var mainPageUrl = '';
+var mainPageScenario = {};
 var localSaveBlob = '';
-
-
-//TODO: переписать на получение от клиента
-var step = [{
+var step = JSON.parse(localStorage.getItem('allTask'));
+var uxc_debugger = function (name) {
+    console.log(' ');
+    console.log('%c---Start Debag---', 'background: #ffffff; color: #ff0000');
+    console.log('%cПеременная(ые):', 'background: #ffffff; color: #ff0000', name);
+    for (var i = 1; i < arguments.length; i++) {
+        console.log(arguments[i]);
+    }
+    console.log('%c---Stop Debag---', 'background: #ffffff; color: #ff0000');
+    console.log(' ');
+};
+var steps = [{
     'orderNum': 3602,
-    'stepId': 4,
+    'stepId': 1,
     'startTime': '00:00:00'
 }, {
     'orderNum': 3602,
-    'stepId': 5,
+    'stepId': 2,
     'startTime': '00:01:00'
 }, {
     'orderNum': 3602,
-    'stepId': 6,
+    'stepId': 3,
     'startTime': '00:02:00'
 }];
 
 function saveVideo() {
+    uxc_debugger('saveVideo', 'зашел');
+
     $.ajax({
-        url: urlUXC + '/api/tester/create-task',
-        data: {orderId: config.order_id},
+        url: config.url + '/api/tester/create-task',
+        data: {orderId: localStorage.getItem('orderId')},
         success: function (data) {
+            uxc_debugger('/api/tester/create-task success data', data);
 
             var formData = new FormData();
-
             formData.append('task-id', data.id);
             formData.append('video-file', localSaveBlob);
             formData.append('name', formData.get('video-file').name + '.webm');
-            //formData.append('tag-dto', JSON.stringify(step));
-
+            formData.append('tag-dto', JSON.stringify(steps));
             var xhr = new XMLHttpRequest();
-
-            xhr.open("POST", urlUXC + '/api/video-upload/', true);
+            xhr.open("POST", config.url + '/api/video-upload/', true);
             xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
             // xhr.setRequestHeader('Accept', 'application/octet-stream, text/plain;charset=UTF-8, text/plain;charset=ISO-8859-1, application/xml, text/xml, application/x-www-form-urlencoded, application/*+xml, multipart/form-data, application/json;charset=UTF-8, application/*+json;charset=UTF-8, */*');
             // xhr.onload = function (data) {};
@@ -50,21 +70,10 @@ function saveVideo() {
     });
 }
 
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "config") {
         config = request.obj;
-        config.uxc_debugger = function (name) {
-            if (this.debug) {
-                console.log(' ');
-                console.log('---Start Debag---');
-                console.log('Переменная(ые):', name);
-                for (var i = 1; i < arguments.length; i++) {
-                    console.log(arguments[i]);
-                }
-                console.log('---Stop Debag---');
-                console.log(' ');
-            }
-        }
     }
     if (request.eventPage == "pageRecId") {
         pageRecId = request.obj;
@@ -78,12 +87,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({url: mainPageUrl});
     }
     if (request.eventPage == "getStep") {
-        for (var i in all_task) {
-            if (all_task[i].url == mainPageUrl) {
-                sendResponse({allTask: all_task[i]});
-                config.order_id = all_task[i].id;
-            }
-        }
+        uxc_debugger('scenario', localStorage.getItem('scenario'));
+        sendResponse({scenario: localStorage.getItem('scenario')});
     }
     if (request.eventPage == "startRec") {
         getUserConfigs();
@@ -97,15 +102,122 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         getUserConfigs();
         sendResponse({UXC_request: true});
     }
-    if (request.eventPage == "setStep") {
-        config.uxc_debugger('Шаги',request.step)
+    if (request.eventPage == "setBtn") {
+        uxc_debugger('orderId c кнопки на сайте', request.orderId);
+        authorization();
+        localStorage.setItem('orderId', request.orderId);
+        startRender();
         sendResponse({UXC_request: true});
+    }
+    if (request.eventPage == "setStep") {
+        uxc_debugger('Шаги', request.step);
+        step = request.step;
+        sendResponse({UXC_request: true});
+    }
+    if (request.eventPage == "statusRec") {
+        uxc_debugger('Шаги', request.step);
+        step = request.step;
+        sendResponse({UXC_request: true});
+    }
+
+    
+    if (request.eventPage == "authorization") {
+        uxc_debugger('authorization');
+        authorization();
     }
 });
 chrome.browserAction.setIcon({
     path: 'images/main-icon.png'
 });
 
+function authorization() {
+    $.ajax({
+        type: "GET",
+        url: config.url + "/api/account",
+        success: function (data) {
+            uxc_debugger('Роль', data.role);
+            if (data.role == "ROLE_TESTER") {
+                config.user.authorization = true;
+                uxc_debugger('Данные авторизации', data);
+                function getCookiesUXC(domain, name, callback) {
+                    chrome.cookies.get({"url": domain, "name": name}, function (cookie) {
+                        if (callback) {
+                            callback(cookie.value);
+                        }
+                    });
+                }
+
+                getCookiesUXC(config.url, "CSRF-TOKEN", function (csrf_token) {
+                    uxc_debugger('csrf_token', csrf_token);
+                    config.csrf_token = csrf_token;
+                    getCookiesUXC(config.url, "_ym_uid", function (_ym_uid) {
+                        uxc_debugger('_ym_uid', _ym_uid);
+                        config._ym_uid = _ym_uid;
+                        setTask();
+                    });
+                });
+            } else {
+                config.user.authorization = true;
+                $('#task').text(config.text_error_if_role_not_tester);
+                updateView();
+            }
+        },
+        error: function (data) {
+            config.user.authorization = false;
+            $('#task').text(config.text_error_not_authorization);
+            updateView();
+        }
+    });
+}
+
+function startRender(text) {
+    var orderId = localStorage.getItem('orderId');
+    var list_task = JSON.parse(localStorage.getItem('allTask'));
+    for (var num in list_task) {
+        uxc_debugger('list_task' + num, list_task[num]);
+        if (list_task[num].id == orderId) {
+            mainPageUrl = list_task[num].url;
+            mainPageScenario = list_task[num].scenario;
+            localStorage.setItem('scenario', JSON.stringify(mainPageScenario));
+        }
+    }
+    if (mainPageUrl.split(':')[0] == 'http' || mainPageUrl.split(':')[0] == 'https') {
+        chrome.tabs.create({url: mainPageUrl}, function (tabs) {
+            config.tabId = tabs.id;
+        });
+    } else {
+        chrome.tabs.create({url: 'http://' + mainPageUrl}, function (tabs) {
+            config.tabId = tabs.id;
+        });
+    }
+    uxc_debugger('startRender', text);
+}
+
+function setTask() {
+    uxc_debugger('config', config);
+    $.ajax({
+        type: "GET",
+        url: config.url + "/api/tester/new-tasks",
+        success: function (all_task) {
+            uxc_debugger('allTask', all_task);
+            localStorage.setItem('allTask', JSON.stringify(all_task));
+            setScript('allTask', localStorage.getItem('allTask'));
+        },
+        error: function (data) {
+            setScript('allTaskError');
+            uxc_debugger('error api/tester/new-tasks', data);
+        }
+    });
+}
+
+
+//Работа с script.js
+function setScript(eventPage, object, objWin, url) {
+    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin, url: url}, function (obj) {
+        //uxc_debugger('Ответ от фоновой странице:', obj);
+        return obj;
+    });
+}
 
 //chrome.browserAction.onClicked.addListener(getUserConfigs);
 
