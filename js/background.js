@@ -12,11 +12,12 @@ var config = {
     text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
     text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
     tabId: 0,
-    url: 'https://lk.uxcrowd.ru:8081',
-    //url: 'http://localhost:9797',
+    //url: 'https://lk.uxcrowd.ru:8081',
+    url: 'http://localhost:9797',
     //url: 'http://192.168.2.121:9797/',
     debug: true
 };
+localStorage.setItem('RecUxc', false);
 var mainPageUrl = '';
 var mainPageScenario = {};
 var localSaveBlob = '';
@@ -31,19 +32,7 @@ var uxc_debugger = function (name) {
     console.log('%c---Stop Debag---', 'background: #ffffff; color: #ff0000');
     console.log(' ');
 };
-var steps = [{
-    'orderNum': 3602,
-    'stepId': 1,
-    'startTime': '00:00:00'
-}, {
-    'orderNum': 3602,
-    'stepId': 2,
-    'startTime': '00:01:00'
-}, {
-    'orderNum': 3602,
-    'stepId': 3,
-    'startTime': '00:02:00'
-}];
+
 
 function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
@@ -52,8 +41,21 @@ function saveVideo() {
         url: config.url + '/api/tester/create-task',
         data: {orderId: localStorage.getItem('orderId')},
         success: function (data) {
+            var steps = [{
+                'orderNum': 32520,
+                'stepId': 1,
+                'startTime': '00:00:00'
+            }, {
+                'orderNum': 32521,
+                'stepId': 2,
+                'startTime': '00:01:00'
+            }, {
+                'orderNum': 32522,
+                'stepId': 3,
+                'startTime': '00:02:00'
+            }];
             uxc_debugger('/api/tester/create-task success data', data);
-
+            uxc_debugger('saveVideo', 'зашел');
             var formData = new FormData();
             formData.append('task-id', data.id);
             formData.append('video-file', localSaveBlob);
@@ -65,6 +67,9 @@ function saveVideo() {
             // xhr.setRequestHeader('Accept', 'application/octet-stream, text/plain;charset=UTF-8, text/plain;charset=ISO-8859-1, application/xml, text/xml, application/x-www-form-urlencoded, application/*+xml, multipart/form-data, application/json;charset=UTF-8, application/*+json;charset=UTF-8, */*');
             // xhr.onload = function (data) {};
             xhr.send(formData);
+        },
+        error: function (data) {
+            uxc_debugger('error', data);
         },
         dataType: 'json'
     });
@@ -84,7 +89,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         all_task = request.obj;
     }
     if (request.eventPage == "getIncludeUrl") {
-        sendResponse({url: mainPageUrl});
+        sendResponse({statusRec: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "getStep") {
         uxc_debugger('scenario', localStorage.getItem('scenario'));
@@ -93,6 +98,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "startRec") {
         getUserConfigs();
         sendResponse({UXC_request: true});
+        localStorage.setItem('RecUxc', true);
+        sendResponse({UXC_request: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "pauseRec") {
         recorder.pauseRecording();
@@ -100,7 +107,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "stopRec") {
         getUserConfigs();
-        sendResponse({UXC_request: true});
+        localStorage.setItem('RecUxc', false);
+        sendResponse({UXC_request: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "setBtn") {
         uxc_debugger('orderId c кнопки на сайте', request.orderId);
@@ -108,6 +116,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         localStorage.setItem('orderId', request.orderId);
         startRender();
         sendResponse({UXC_request: true});
+        localStorage.setItem('RecUxc', true);
     }
     if (request.eventPage == "setStep") {
         uxc_debugger('Шаги', request.step);
@@ -120,7 +129,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({UXC_request: true});
     }
 
-    
+
     if (request.eventPage == "authorization") {
         uxc_debugger('authorization');
         authorization();
@@ -950,3 +959,5 @@ function createAnswer(sdp) {
 }
 
 var audioPlayer, context, mediaStremSource, mediaStremDestination;
+
+
