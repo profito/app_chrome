@@ -1,0 +1,44 @@
+<script type="text/html" id="UXC_tmpl_main">
+    <div class="uxc_main_block">
+        <div class="uxc_show_more">
+            <div class="uxc_btn open"></div>
+        </div>
+        <div class="uxc_step"></div>
+        <div class="uxc_navigation_menu">
+            <div class="uxc_navigation_item">
+                <button class="uxc_btn_play">play</button>
+            </div>
+            <!--<div class="uxc_navigation_item">
+                <button class="uxc_btn_pause">pause</button>
+            </div>-->
+            <div class="uxc_navigation_item">
+                <button class="uxc_btn_stop" >stop</button>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="UXC_tmpl_step">
+    <% for ( var i = 0; i < steps.length; i++ ) { %>
+    <% if(steps.length==(i+1)){ %>
+    <div class="uxc_item">
+        <div class="uxc_item_description"><%= steps[i].description %></div>
+        del data-at=order.id onclick(delOrder(order.id ))
+    </div>
+    <% }else{ %>
+    <div class="uxc_item">
+        <div class="uxc_item_description"><%= steps[i].description %></div>
+        <div class="uxc_item_next" disabled="disabled"></div>
+    </div>
+    <% } %>
+    <% } %>
+</script>
+<script type="text/html" id="UXC_tmpl_btn">
+    <% for ( var i = 0; i < users.length; i++ ) { %>
+    <li><a href="<%=users[i].url%>"><%=users[i].name%></a></li>
+    <% } %>
+</script>
+<script type="text/html" id="UXC_tmpl_panel">
+    <% for ( var i = 0; i < users.length; i++ ) { %>
+    <li><a href="<%=users[i].url%>"><%=users[i].name%></a></li>
+    <% } %>
+</script>

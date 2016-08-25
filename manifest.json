@@ -39,7 +39,10 @@
   ],
   "web_accessible_resources": [
     "images/main-icon.png",
-    "images/loader.gif"
+    "images/loader.gif",
+    "js/injected.js",
+    "tmpl/tmpl.html",
+    "css/uxc_injected_style.css"
   ],
   "content_scripts": [
     {
@@ -48,7 +51,8 @@
       ],
       "js": [
         "js/jquery.js",
-        "js/include.js"
+        "js/include.js",
+        "js/injected.js"
       ]
     }
   ]

@@ -34,7 +34,6 @@ function updateView() {
     }
 }
 
-
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "allTask") {
         renderStep(JSON.parse(request.obj))
@@ -45,13 +44,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         $('#task').text(config.text_error_not_authorization);
         updateView();
     }
+    if (request.eventPage == "updateView") {
+        config.user.authorization = request.objWin;
+        $('#task').text(request.obj);
+        updateView();
+    }
 });
 
 function authorization() {
     setBackground("authorization");
 }
 
-//TODO-front: переписать открытие окон
+ //TODO-front: переписать открытие окон
 function openPage(orderId) {
     chrome.runtime.sendMessage({
         eventPage: "setBtn",
@@ -69,21 +73,6 @@ function openPage(orderId) {
      setBackground("pageRecId", tabs.id, tabs.windowId, url);
      });
      }*/
-}
-
-authorization();
-
-// Работа с DOM (injected.js)
-function setDom(code, tabId) {
-    chrome.tabs.executeScript(tabId, {code: code});
-}
-
-//Работа с Background.js
-function setBackground(eventPage, object, objWin, url) {
-    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin, url: url}, function (obj) {
-        //uxc_debugger('Ответ от фоновой странице:', obj);
-        return obj;
-    });
 }
 
 function renderStep(all_task) {
@@ -108,6 +97,20 @@ function renderStep(all_task) {
     uxc_debugger('отрисовали шаги all_task', all_task);
 }
 
+authorization();
+
+// Работа с DOM (injected.js)
+function setDom(code, tabId) {
+    chrome.tabs.executeScript(tabId, {code: code});
+}
+
+//Работа с Background.js
+function setBackground(eventPage, object, objWin, url) {
+    chrome.runtime.sendMessage({eventPage: eventPage, obj: object, objWin: objWin, url: url}, function (obj) {
+        //uxc_debugger('Ответ от фоновой странице:', obj);
+        return obj;
+    });
+}
 
 //Постоянный порт на все страницы
 var runtimePort;

@@ -17,7 +17,9 @@ var config = {
     //url: 'http://192.168.2.121:9797/',
     debug: true
 };
+
 localStorage.setItem('RecUxc', false);
+
 var mainPageUrl = '';
 var mainPageScenario = {};
 var localSaveBlob = '';
@@ -124,14 +126,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({UXC_request: true});
     }
     if (request.eventPage == "statusRec") {
-        uxc_debugger('Шаги', request.step);
-        step = request.step;
-        sendResponse({UXC_request: true});
+        uxc_debugger('statusRec', localStorage.getItem('RecUxc'));
+        sendResponse({statusRec: localStorage.getItem('RecUxc')});
     }
-
-
     if (request.eventPage == "authorization") {
         uxc_debugger('authorization');
+        authorization();
+    }
+    if (request.eventPage == "stepRec") {
+        uxc_debugger('stepRec');
         authorization();
     }
 });
@@ -145,17 +148,10 @@ function authorization() {
         url: config.url + "/api/account",
         success: function (data) {
             uxc_debugger('Роль', data.role);
+            //TODO-front: сделать отдельные оповещения на роли
             if (data.role == "ROLE_TESTER") {
                 config.user.authorization = true;
                 uxc_debugger('Данные авторизации', data);
-                function getCookiesUXC(domain, name, callback) {
-                    chrome.cookies.get({"url": domain, "name": name}, function (cookie) {
-                        if (callback) {
-                            callback(cookie.value);
-                        }
-                    });
-                }
-
                 getCookiesUXC(config.url, "CSRF-TOKEN", function (csrf_token) {
                     uxc_debugger('csrf_token', csrf_token);
                     config.csrf_token = csrf_token;
@@ -167,17 +163,42 @@ function authorization() {
                 });
             } else {
                 config.user.authorization = true;
-                $('#task').text(config.text_error_if_role_not_tester);
-                updateView();
+                setScript('updateView', config.text_error_if_role_not_tester, true);
             }
         },
         error: function (data) {
+            uxc_debugger('/api/account error data', data);
             config.user.authorization = false;
-            $('#task').text(config.text_error_not_authorization);
-            updateView();
+            setScript('updateView', config.text_error_not_authorization, false);
         }
     });
 }
+
+function setTask() {
+    uxc_debugger('config', config);
+    $.ajax({
+        type: "GET",
+        url: config.url + "/api/tester/new-tasks",
+        success: function (all_task) {
+            uxc_debugger('allTask', all_task);
+            localStorage.setItem('allTask', JSON.stringify(all_task));
+            setScript('allTask', localStorage.getItem('allTask'));
+        },
+        error: function (data) {
+            setScript('allTaskError');
+            uxc_debugger('error api/tester/new-tasks', data);
+        }
+    });
+}
+
+function getCookiesUXC(domain, name, callback) {
+    chrome.cookies.get({"url": domain, "name": name}, function (cookie) {
+        if (callback) {
+            callback(cookie.value);
+        }
+    });
+}
+
 
 function startRender(text) {
     var orderId = localStorage.getItem('orderId');
@@ -202,23 +223,6 @@ function startRender(text) {
     uxc_debugger('startRender', text);
 }
 
-function setTask() {
-    uxc_debugger('config', config);
-    $.ajax({
-        type: "GET",
-        url: config.url + "/api/tester/new-tasks",
-        success: function (all_task) {
-            uxc_debugger('allTask', all_task);
-            localStorage.setItem('allTask', JSON.stringify(all_task));
-            setScript('allTask', localStorage.getItem('allTask'));
-        },
-        error: function (data) {
-            setScript('allTaskError');
-            uxc_debugger('error api/tester/new-tasks', data);
-        }
-    });
-}
-
 
 //Работа с script.js
 function setScript(eventPage, object, objWin, url) {
@@ -228,6 +232,13 @@ function setScript(eventPage, object, objWin, url) {
     });
 }
 
+
+/*-------------------------------                   ---REC---                      -----------------------------------*/
+/*-------------------------------                   ---REC---                      -----------------------------------*/
+/*-------------------------------                   ---REC---                      -----------------------------------*/
+/*-------------------------------                   ---REC---                      -----------------------------------*/
+/*-------------------------------                   ---REC---                      -----------------------------------*/
+/*-------------------------------                   ---REC---                      -----------------------------------*/
 //chrome.browserAction.onClicked.addListener(getUserConfigs);
 
 function captureDesktop() {
