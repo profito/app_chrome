@@ -8,7 +8,6 @@ var UXC_js = {
 function UXC_initialization() {
     console.log('UXC_initialization');
     chrome.runtime.sendMessage({eventPage: "statusRec"}, function (obj) {
-        console.log(obj);
         if (obj.statusRec!="false") {
             //добавляем на страницу UXC контейнер
             $('body').append("<div class='UXC_Plugins'></div>");
