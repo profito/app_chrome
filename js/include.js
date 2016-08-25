@@ -16,7 +16,7 @@ $(window).ready(function () {
         chrome.runtime.sendMessage({eventPage: "getIncludeUrl"}, function (obj) {
             //console.log('Cтатус записи', obj.statusRec);
             if (obj.statusRec) {
-                $.get('chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/tmpl/tmpl.html',
+                $.get('chrome-extension://imehafdibiebgjhlfjhgfpljhapekiab/tmpl/tmpl.html',
                     function (data) {
                         var link = document.createElement('div');
                         link.innerHTML = data;
@@ -24,7 +24,7 @@ $(window).ready(function () {
                     }
                 );
             //    console.log('Загружены шаблоны');
-                $.get('chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/css/uxc_injected_style.css',
+                $.get('chrome-extension://imehafdibiebgjhlfjhgfpljhapekiab/css/uxc_injected_style.css',
                     function (data) {
                         var link = document.createElement('style');
                         link.rel = 'stylesheet';
@@ -34,7 +34,7 @@ $(window).ready(function () {
                     }
                 );
             //    console.log('Загружены стили');
-                $.get('chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/js/injected.js',
+                $.get('chrome-extension://imehafdibiebgjhlfjhgfpljhapekiab/js/injected.js',
                     function (data) {
                         var script = document.createElement("script");
                         script.setAttribute("type", "text/javascript");
