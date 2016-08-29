@@ -14,87 +14,67 @@ function UXC_initialization() {
             //заполняем его основным шаблоном
             $('.UXC_Plugins').html(tmpl("UXC_tmpl_main", {}));
             $('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
-
-            //запрашиваем шаги
-            chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
-                console.log('obj.scenario', obj);
-                if (obj.scenario) {
-                    //отрисовываем шаги
-                    $('.uxc_step').html(tmpl("UXC_tmpl_step", {steps: obj.scenario.description}));
-                    //делаем первый шак активным
-                    UXC_events();
-                }
-            })
+            $('.uxc_main_block').html(tmpl("UXC_tmpl_start", {}));
+            var uxc_btn_play = $('.uxc_btn_play');
+            $(uxc_btn_play).click(function () {
+                chrome.runtime.sendMessage({eventPage: "startRec"}, function (obj) {
+                    if (obj.UXC_request == true) {
+                        chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                            if (obj.scenario) {
+                                $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                                $('.uxc_item_description').text(obj.scenario.description);
+                                UXC_events_next();
+                            }
+                        })
+                    }
+                });
+            });
         }
     });
 }
-
-// var step = [{
-//     'orderNum': 3602,
-//     'stepId': 1,
-//     'startTime': '00:00:00'
-// }, {
-//     'orderNum': 3602,
-//     'stepId': 2,
-//     'startTime': '00:01:00'
-// }, {
-//     'orderNum': 3602,
-//     'stepId': 3,
-//     'startTime': '00:02:00'
-// }];
-//
-//
-// chrome.runtime.sendMessage({eventPage: "setStep", step: step}, function (obj) {
-//     if (obj.UXC_request == true) {
-//         $(uxc_btn_play).attr({disabled: true});
-//         $(uxc_item_next).attr({disabled: false});
-//         console.log('start');
-//     }
-// });
-
-function UXC_events() {
-    var UXC_Plugins = $('.UXC_Plugins');
-    var uxc_step = $('.uxc_step');
-    var uxc_btn_play = $('.uxc_btn_play');
-    var uxc_btn_pause = $('.uxc_btn_pause');
-    var uxc_btn_stop = $('.uxc_btn_stop');
+function UXC_events_next() {
     var uxc_item_next = $('.uxc_item_next');
-    var uxc_post = $('.uxc_post');
-    $(uxc_btn_play).click(function () {
-        chrome.runtime.sendMessage({eventPage: "startRec"}, function (obj) {
-            if (obj.UXC_request == true) {
-                $(uxc_btn_play).attr({disabled: true});
-                $(uxc_item_next).attr({disabled: false});
-                console.log('start');
-            }
-        });
-    });
-    $(uxc_btn_pause).click(function () {
-        chrome.runtime.sendMessage({eventPage: "pauseRec"}, function (obj) {
-            if (obj.UXC_request == true) {
-                console.log('pause');
-            }
-        });
-    });
-    $(uxc_btn_stop).click(function () {
-        chrome.runtime.sendMessage({eventPage: "stopRec"}, function (obj) {
-            if (obj.UXC_request == true) {
-                console.log('stop');
-            }
-        });
-    });
+    var uxc_btn_stop = $('.uxc_btn_stop');
     $(uxc_item_next).click(function () {
         chrome.runtime.sendMessage({eventPage: "nextStep"}, function (obj) {
-            console.log('obj.scenario', obj);
             if (obj.scenario) {
                 if (obj.scenario == "finish") {
-                    $('.uxc_step').html(tmpl("UXC_tmpl_step_finish"));
-                    $(uxc_btn_stop).attr({disabled:false});
+                    $('.uxc_main_block').html(tmpl("UXC_tmpl_stop"));
+                    $(uxc_btn_stop).attr({disabled: false});
+                    UXC_events_stop();
                 } else {
                     $('.uxc_item_description').text(obj.scenario.description);
                 }
             }
         })
+    });
+}
+
+
+function UXC_events_stop() {
+    var uxc_btn_stop = $('.uxc_btn_stop');
+
+    $(uxc_btn_stop).click(function () {
+        chrome.runtime.sendMessage({eventPage: "stopRec"}, function (obj) {
+            $('.UXC_Plugins').remove();
+        });
+    });
+
+}
+function UXC_events() {
+    var UXC_Plugins = $('.UXC_Plugins');
+    var uxc_step = $('.uxc_step');
+    var uxc_btn_pause = $('.uxc_btn_pause');
+    var uxc_item_next = $('.uxc_item_next');
+    var uxc_item = $('.uxc_item');
+    var uxc_post = $('.uxc_post');
+    var uxc_btn_stop = $('.uxc_btn_stop');
+
+    $(uxc_btn_pause).click(function () {
+        chrome.runtime.sendMessage({eventPage: "pauseRec"}, function (obj) {
+            if (obj.UXC_request == true) {
+            }
+        });
     });
 }
 

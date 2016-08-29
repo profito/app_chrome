@@ -43,7 +43,6 @@ var config = {
     }
 };
 
-
 localStorage.setItem('RecUxc', false);
 
 var mainPageUrl = '';
@@ -60,7 +59,6 @@ var uxc_debugger = function (name) {
     console.log('%c---Stop Debag---', 'background: #ffffff; color: #ff0000');
     console.log(' ');
 };
-
 
 function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
@@ -89,7 +87,7 @@ function saveVideo() {
             formData.append('name', formData.get('video-file').name + '.webm');
             formData.append('tag-dto', JSON.stringify(steps));
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", config.url + '/api/video-upload/', true);
+            xhr.open("POST", config.url + '/api/video-upload-app/', true);
             xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
             // xhr.setRequestHeader('Accept', 'application/octet-stream, text/plain;charset=UTF-8, text/plain;charset=ISO-8859-1, application/xml, text/xml, application/x-www-form-urlencoded, application/*+xml, multipart/form-data, application/json;charset=UTF-8, application/*+json;charset=UTF-8, */*');
             // xhr.onload = function (data) {};
@@ -122,16 +120,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({scenario: config.getActiveStep()});
     }
     if (request.eventPage == "nextStep") {
-        if (config.activeStep() >= (config.scenario.steps.length-1)) {
+        if (config.activeStep() >= (config.scenario.steps.length - 1)) {
             config.resetStep();
             sendResponse({scenario: 'finish'});
-        }else {
+        } else {
             config.nextStep();
             sendResponse({scenario: config.getActiveStep()});
         }
     }
     if (request.eventPage == "startRec") {
         getUserConfigs();
+        config.resetStep();
         sendResponse({UXC_request: true});
         localStorage.setItem('RecUxc', true);
         sendResponse({UXC_request: localStorage.getItem('RecUxc')});

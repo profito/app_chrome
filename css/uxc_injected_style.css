@@ -53,14 +53,31 @@
         transform: rotateX(-180deg) translate(50%, 50%);
         right: 50%;
         left: auto; }
-  .UXC_Plugins .uxc_main_block .uxc_step img {
+  .UXC_Plugins .uxc_main_block .uxc_main_block_start {
+    background: #00942c; }
+    .UXC_Plugins .uxc_main_block .uxc_main_block_start .btn.uxc_btn_stop,
+    .UXC_Plugins .uxc_main_block .uxc_main_block_start .btn.uxc_btn_play {
+      background: #c73030;
+      display: inline-block;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.42857143;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      margin: 20px 50%;
+      transform: translateX(-50%);
+      white-space: nowrap; }
+  .UXC_Plugins .uxc_main_block img {
     margin: 0 50%;
     -webkit-transform: translateX(-50%);
     -moz-transform: translateX(-50%);
     -ms-transform: translateX(-50%);
     -o-transform: translateX(-50%);
     transform: translateX(-50%); }
-  .UXC_Plugins .uxc_main_block .uxc_step .uxc_item {
+  .UXC_Plugins .uxc_main_block .uxc_item {
     width: 100%;
     line-height: 14px;
     font-size: 14px;
@@ -72,21 +89,21 @@
     padding: 0;
     transition: all 0.2s linear, padding 0s linear;
     position: relative; }
-    .UXC_Plugins .uxc_main_block .uxc_step .uxc_item.uxc_active_step {
+    .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step {
       transition: all 0s linear, padding 0s linear;
       padding: 10px;
       opacity: 1;
       max-height: 1000px; }
-    .UXC_Plugins .uxc_main_block .uxc_step .uxc_item .uxc_item_description {
+    .UXC_Plugins .uxc_main_block .uxc_item .uxc_item_description {
       padding: 0 40px 0 0; }
-    .UXC_Plugins .uxc_main_block .uxc_step .uxc_item .uxc_item_next {
+    .UXC_Plugins .uxc_main_block .uxc_item .uxc_item_next {
       position: absolute;
       height: 100%;
       width: 40px;
       border-left: 1px solid silver;
       right: 0;
       top: 0; }
-      .UXC_Plugins .uxc_main_block .uxc_step .uxc_item .uxc_item_next:before {
+      .UXC_Plugins .uxc_main_block .uxc_item .uxc_item_next:before {
         content: ">";
         font-size: 20px;
         position: absolute;

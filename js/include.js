@@ -6,7 +6,7 @@ if (!window.jQuery) {
 }
 $(window).ready(function () {
     setTimeout(function () {
-        if (window.location.href.indexOf('uxcrowd.ru:8081') != -1) {
+        if ((window.location.href.indexOf('localhost') != -1) || (window.location.href.indexOf('uxcrowd') != -1)) {
             $('.btn.btn-success.btn-sm').click(function () {
                 chrome.runtime.sendMessage({
                     eventPage: "setBtn",

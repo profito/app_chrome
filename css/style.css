@@ -4,9 +4,8 @@ body {
   outline: none;
   width: 320px;
   border: none;
-  border: 4px solid #5ec700;
   float: left;
-  border-radius: 4px; }
+  background: #00942c; }
 
 .popap_ux {
   position: fixed;
@@ -32,7 +31,9 @@ body {
   .window_plugin .display_none {
     display: none; }
   .window_plugin .btn {
-    margin-top: 15px; }
+    margin-top: 15px;
+    border: 1px solid #fff;
+    color: white; }
   .window_plugin .item_title {
     font-size: 12px;
     word-wrap: break-word;
@@ -80,6 +81,8 @@ body {
     overflow-y: auto; }
   .window_plugin .popover .popover-title {
     display: none; }
+  .window_plugin .tab-pane {
+    background: #fff; }
 
 .uxcrowd_menu {
   position: fixed;
