@@ -12,11 +12,37 @@ var config = {
     text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
     text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
     tabId: 0,
-    url: 'https://lk.uxcrowd.ru:8081',
-    //url: 'http://localhost:9797',
+    //url: 'https://lk.uxcrowd.ru:8081',
+    url: 'http://localhost:9797',
     //url: 'http://192.168.2.121:9797/',
-    debug: false
+    debug: true,
+    activeStep: function () {
+        return localStorage.getItem('activeStep')
+    },
+    nextStep: function (step) {
+        uxc_debugger('localStorage.getItem(activeStep)', localStorage.getItem('activeStep'));
+        localStorage.setItem('activeStep', (Number(localStorage.getItem('activeStep')) + 1));
+    },
+    scenario: {},
+    step: JSON.parse(localStorage.getItem('allTask')),
+    getScenario: function () {
+        for (var i in this.step) {
+            if (this.step[i].id == this.order_id) {
+                this.scenario = this.step[i].scenario;
+            }
+        }
+    },
+    getActiveStep: function () {
+        this.getScenario();
+        uxc_debugger('this.activeStep', this.activeStep());
+        uxc_debugger('this.scenario.steps.length', this.scenario.steps.length);
+        return this.scenario.steps[this.activeStep()]
+    },
+    resetStep: function () {
+        localStorage.setItem('activeStep', 0);
+    }
 };
+
 
 localStorage.setItem('RecUxc', false);
 
@@ -38,7 +64,6 @@ var uxc_debugger = function (name) {
 
 function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
-
     $.ajax({
         url: config.url + '/api/tester/create-task',
         data: {orderId: localStorage.getItem('orderId')},
@@ -94,8 +119,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({statusRec: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "getStep") {
-        uxc_debugger('scenario', localStorage.getItem('scenario'));
-        sendResponse({scenario: localStorage.getItem('scenario')});
+        sendResponse({scenario: config.getActiveStep()});
+    }
+    if (request.eventPage == "nextStep") {
+        if (config.activeStep() >= (config.scenario.steps.length-1)) {
+            config.resetStep();
+            sendResponse({scenario: 'finish'});
+        }else {
+            config.nextStep();
+            sendResponse({scenario: config.getActiveStep()});
+        }
     }
     if (request.eventPage == "startRec") {
         getUserConfigs();

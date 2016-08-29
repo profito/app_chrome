@@ -113,6 +113,12 @@
         background: rgba(208, 220, 197, 0.6);
         transition: background 0.2s linear;
         color: #5ec700; }
+        .UXC_Plugins .uxc_main_block .uxc_navigation_menu .uxc_navigation_item button:disabled {
+          background: lightgray;
+          color: white; }
+        .UXC_Plugins .uxc_main_block .uxc_navigation_menu .uxc_navigation_item button:disabled:hover {
+          background: lightgray;
+          color: white; }
         .UXC_Plugins .uxc_main_block .uxc_navigation_menu .uxc_navigation_item button:hover {
           background: darkgray;
           color: white; }

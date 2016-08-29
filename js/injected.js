@@ -8,7 +8,7 @@ var UXC_js = {
 function UXC_initialization() {
     console.log('UXC_initialization');
     chrome.runtime.sendMessage({eventPage: "statusRec"}, function (obj) {
-        if (obj.statusRec!="false") {
+        if (obj.statusRec != "false") {
             //добавляем на страницу UXC контейнер
             $('body').append("<div class='UXC_Plugins'></div>");
             //заполняем его основным шаблоном
@@ -17,13 +17,11 @@ function UXC_initialization() {
 
             //запрашиваем шаги
             chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
-                console.log('obj.scenario', obj.scenario)
+                console.log('obj.scenario', obj);
                 if (obj.scenario) {
                     //отрисовываем шаги
-                    $('.uxc_step').html(tmpl("UXC_tmpl_step", {steps: JSON.parse(obj.scenario).steps}));
+                    $('.uxc_step').html(tmpl("UXC_tmpl_step", {steps: obj.scenario.description}));
                     //делаем первый шак активным
-                    UXC_active_step();
-                    //навешиваем события
                     UXC_events();
                 }
             })
@@ -86,13 +84,17 @@ function UXC_events() {
         });
     });
     $(uxc_item_next).click(function () {
-        if ($(this).attr('disabled') == false) {
-            UXC_js.activeStep++;
-            if (UXC_js.activeStep == UXC_js.colTask) {
-                $(uxc_btn_stop).attr({disabled: false})
+        chrome.runtime.sendMessage({eventPage: "nextStep"}, function (obj) {
+            console.log('obj.scenario', obj);
+            if (obj.scenario) {
+                if (obj.scenario == "finish") {
+                    $('.uxc_step').html(tmpl("UXC_tmpl_step_finish"));
+                    $(uxc_btn_stop).attr({disabled:false});
+                } else {
+                    $('.uxc_item_description').text(obj.scenario.description);
+                }
             }
-            UXC_active_step()
-        }
+        })
     });
 }
 
