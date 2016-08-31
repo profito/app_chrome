@@ -16,6 +16,7 @@ var config = {
     url: 'http://localhost:9797',
     //url: 'http://192.168.2.121:9797/',
     debug: true,
+    allTime: [],
     activeStep: function () {
         return localStorage.getItem('activeStep')
     },
@@ -23,27 +24,85 @@ var config = {
         uxc_debugger('localStorage.getItem(activeStep)', localStorage.getItem('activeStep'));
         localStorage.setItem('activeStep', (Number(localStorage.getItem('activeStep')) + 1));
     },
-    scenario: {},
-    step: JSON.parse(localStorage.getItem('allTask')),
-    getScenario: function () {
-        for (var i in this.step) {
-            if (this.step[i].id == this.order_id) {
-                this.scenario = this.step[i].scenario;
-            }
-        }
+    scenario: function () {
+        return JSON.parse(localStorage.getItem('scenario'));
     },
+    step: JSON.parse(localStorage.getItem('allTask')),
+    // getScenario: function () {
+    //     for (var i in this.step) {
+    //         if (this.step[i].id == this.order_id) {
+    //             this.scenario = this.step[i].scenario;
+    //         }
+    //     }
+    // },
     getActiveStep: function () {
-        this.getScenario();
-        uxc_debugger('this.activeStep', this.activeStep());
-        uxc_debugger('this.scenario.steps.length', this.scenario.steps.length);
-        return this.scenario.steps[this.activeStep()]
+        // this.getScenario();
+
+        uxc_debugger('orderNum', this.scenario().steps[this.activeStep()].orderNum);
+        localStorage.setItem('orderNum', (this.scenario().steps[this.activeStep()].orderNum));
+        return this.scenario().steps[this.activeStep()]
     },
     resetStep: function () {
         localStorage.setItem('activeStep', 0);
+    },
+    addTime: function () {
+        this.allTime.push({
+            startTime: dateDiff(localStorage.getItem('startDate'), new Date()),
+            orderNum: localStorage.getItem('orderNum')
+        });
+        uxc_debugger('this.allTime', this.allTime);
+    },
+    createSteps: function () {
+        var fullStepAndTime = [];
+        var scenario = this.scenario();
+        for (var num in scenario.steps) {
+            uxc_debugger('scenario' + num, scenario.steps[num]);
+            fullStepAndTime.push({
+                'orderNum': scenario.steps[num].orderNum,
+                'stepId': scenario.steps[num].id,
+                'startTime': this.allTime[num].startTime
+            });
+        }
+        uxc_debugger('fullStepAndTime', fullStepAndTime);
+        return fullStepAndTime;
     }
 };
 
+function dateDiff(date1, date2) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+
+    var seconds = date2.getSeconds() - date1.getSeconds();
+    if (seconds < 0) {
+        seconds += 60;
+        date2.setMinutes(date2.getMinutes() - 1);
+    }
+    var minutes = date2.getMinutes() - date1.getMinutes();
+    if (minutes < 0) {
+        minutes += 60;
+        date2.setHours(date2.getHours() - 1);
+    }
+    var hours = date2.getHours() - date1.getHours();
+    if (hours < 0) {
+        hours += 24;
+        date2.setDate(date2.getDate() - 1);
+    }
+    if (hours < 10) {
+        hours = '0' + hours;
+    }
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+        seconds = '0' + seconds;
+    }
+    console.log(hours + ':' + minutes + ':' + seconds);
+    return hours + ':' + minutes + ':' + seconds;
+}
+
+
 localStorage.setItem('RecUxc', false);
+localStorage.setItem('openPluginsUxc', false);
 
 var mainPageUrl = '';
 var mainPageScenario = {};
@@ -62,35 +121,21 @@ var uxc_debugger = function (name) {
 
 function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
+
     $.ajax({
         url: config.url + '/api/tester/create-task',
         data: {orderId: localStorage.getItem('orderId')},
         success: function (data) {
-            var steps = [{
-                'orderNum': 32520,
-                'stepId': 1,
-                'startTime': '00:00:00'
-            }, {
-                'orderNum': 32521,
-                'stepId': 2,
-                'startTime': '00:01:00'
-            }, {
-                'orderNum': 32522,
-                'stepId': 3,
-                'startTime': '00:02:00'
-            }];
             uxc_debugger('/api/tester/create-task success data', data);
             uxc_debugger('saveVideo', 'зашел');
             var formData = new FormData();
             formData.append('task-id', data.id);
             formData.append('video-file', localSaveBlob);
             formData.append('name', formData.get('video-file').name + '.webm');
-            formData.append('tag-dto', JSON.stringify(steps));
+            formData.append('tag-dto', JSON.stringify(config.createSteps()));
             var xhr = new XMLHttpRequest();
             xhr.open("POST", config.url + '/api/video-upload-app/', true);
             xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-            // xhr.setRequestHeader('Accept', 'application/octet-stream, text/plain;charset=UTF-8, text/plain;charset=ISO-8859-1, application/xml, text/xml, application/x-www-form-urlencoded, application/*+xml, multipart/form-data, application/json;charset=UTF-8, application/*+json;charset=UTF-8, */*');
-            // xhr.onload = function (data) {};
             xhr.send(formData);
         },
         error: function (data) {
@@ -118,17 +163,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "getStep") {
         sendResponse({scenario: config.getActiveStep()});
+        config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
     }
     if (request.eventPage == "nextStep") {
-        if (config.activeStep() >= (config.scenario.steps.length - 1)) {
+        if (config.activeStep() >= (config.scenario().steps.length - 1)) {
             config.resetStep();
             sendResponse({scenario: 'finish'});
         } else {
             config.nextStep();
             sendResponse({scenario: config.getActiveStep()});
+            config.addTime();
         }
     }
     if (request.eventPage == "startRec") {
+        localStorage.setItem('startDate', new Date());
         getUserConfigs();
         config.resetStep();
         sendResponse({UXC_request: true});
@@ -142,15 +190,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "stopRec") {
         getUserConfigs();
         localStorage.setItem('RecUxc', false);
+        localStorage.setItem('openPluginsUxc', false);
         sendResponse({UXC_request: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "setBtn") {
-        uxc_debugger('orderId c кнопки на сайте', request.orderId);
         authorization();
         localStorage.setItem('orderId', request.orderId);
+        uxc_debugger('orderId из истории', localStorage.getItem('orderId'));
         startRender();
         sendResponse({UXC_request: true});
-        localStorage.setItem('RecUxc', true);
+        localStorage.setItem('openPluginsUxc', true);
     }
     if (request.eventPage == "setStep") {
         uxc_debugger('Шаги', request.step);
@@ -159,7 +208,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "statusRec") {
         uxc_debugger('statusRec', localStorage.getItem('RecUxc'));
-        sendResponse({statusRec: localStorage.getItem('RecUxc')});
+        sendResponse({
+            statusRec: localStorage.getItem('RecUxc'),
+            openPluginsUxc: localStorage.getItem('openPluginsUxc')
+        });
     }
     if (request.eventPage == "authorization") {
         uxc_debugger('authorization');
@@ -173,6 +225,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 chrome.browserAction.setIcon({
     path: 'images/main-icon.png'
 });
+
+localStorage.setItem('allStep', {});
+
+function addStep() {
+    var obj_step = JSON.stringify(localStorage.getItem('allStep'));
+
+    obj_step(new Date(localStorage.getItem('startDate')).getHours() + ':' + new Date(localStorage.getItem('startDate')).getMinutes() + ':' + new Date(localStorage.getItem('startDate')).getSeconds());
+
+}
 
 function authorization() {
     $.ajax({
@@ -232,8 +293,9 @@ function getCookiesUXC(domain, name, callback) {
 }
 
 
-function startRender(text) {
+function startRender() {
     var orderId = localStorage.getItem('orderId');
+    uxc_debugger('orderId из истории', localStorage.getItem('orderId'));
     var list_task = JSON.parse(localStorage.getItem('allTask'));
     for (var num in list_task) {
         uxc_debugger('list_task' + num, list_task[num]);
@@ -252,7 +314,7 @@ function startRender(text) {
             config.tabId = tabs.id;
         });
     }
-    uxc_debugger('startRender', text);
+    uxc_debugger('startRender', '');
 }
 
 

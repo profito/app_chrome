@@ -2,7 +2,7 @@
   "name": "UXCrowd",
   "short_name": "UXCrowd",
   "author": "UXCrowd",
-  "version": "1.1.205",
+  "version": "1.1.206",
   "manifest_version": 2,
   "minimum_chrome_version": "49",
   "incognito": "not_allowed",

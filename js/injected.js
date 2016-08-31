@@ -8,7 +8,7 @@ var UXC_js = {
 function UXC_initialization() {
     console.log('UXC_initialization');
     chrome.runtime.sendMessage({eventPage: "statusRec"}, function (obj) {
-        if (obj.statusRec != "false") {
+        if (obj.openPluginsUxc != "false") {
             //добавляем на страницу UXC контейнер
             $('body').append("<div class='UXC_Plugins'></div>");
             //заполняем его основным шаблоном
@@ -29,9 +29,19 @@ function UXC_initialization() {
                     }
                 });
             });
+            if (obj.statusRec != "false") {
+                chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                    if (obj.scenario) {
+                        $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                        $('.uxc_item_description').text(obj.scenario.description);
+                        UXC_events_next();
+                    }
+                })
+            }
         }
     });
 }
+
 function UXC_events_next() {
     var uxc_item_next = $('.uxc_item_next');
     var uxc_btn_stop = $('.uxc_btn_stop');
@@ -53,14 +63,13 @@ function UXC_events_next() {
 
 function UXC_events_stop() {
     var uxc_btn_stop = $('.uxc_btn_stop');
-
     $(uxc_btn_stop).click(function () {
         chrome.runtime.sendMessage({eventPage: "stopRec"}, function (obj) {
             $('.UXC_Plugins').remove();
         });
     });
-
 }
+
 function UXC_events() {
     var UXC_Plugins = $('.UXC_Plugins');
     var uxc_step = $('.uxc_step');
@@ -69,7 +78,6 @@ function UXC_events() {
     var uxc_item = $('.uxc_item');
     var uxc_post = $('.uxc_post');
     var uxc_btn_stop = $('.uxc_btn_stop');
-
     $(uxc_btn_pause).click(function () {
         chrome.runtime.sendMessage({eventPage: "pauseRec"}, function (obj) {
             if (obj.UXC_request == true) {

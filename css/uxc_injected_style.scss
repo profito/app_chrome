@@ -1,8 +1,10 @@
+@import 'https://fonts.googleapis.com/css?family=Open+Sans';
+
 .UXC_Plugins {
   * {
     vertical-align: baseline;
     font-weight: inherit;
-    font-family: inherit;
+    font-family: 'Open Sans', sans-serif !important;
     font-style: inherit;
     font-size: 100%;
     border: 0 none;
@@ -19,7 +21,7 @@
   position: fixed;
   bottom: 10px;
   right: 10px;
-  width: 300px;
+  width: 300px !important;
   z-index: 1000000000;
   .uxc_main_block {
     .uxc_show_more {
@@ -154,6 +156,7 @@
           background: rgba(208, 220, 197, 0.6);
           transition: background 0.2s linear;
           color: #5ec700;
+          white-space: nowrap;
           &:disabled {
             background: rgb(211, 211, 211);
             color: white;
