@@ -56,14 +56,12 @@ var config = {
         var fullStepAndTime = [];
         var scenario = this.scenario();
         for (var num in scenario.steps) {
-            uxc_debugger('scenario' + num, scenario.steps[num]);
             fullStepAndTime.push({
                 'orderNum': scenario.steps[num].orderNum,
                 'stepId': scenario.steps[num].id,
                 'startTime': this.allTime[num].startTime
             });
         }
-        uxc_debugger('fullStepAndTime', fullStepAndTime);
         return fullStepAndTime;
     }
 };
@@ -121,7 +119,8 @@ var uxc_debugger = function (name) {
 
 function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
-
+    var steps = config.createSteps();
+    uxc_debugger('createSteps', config.createSteps());
     $.ajax({
         url: config.url + '/api/tester/create-task',
         data: {orderId: localStorage.getItem('orderId')},
@@ -132,7 +131,7 @@ function saveVideo() {
             formData.append('task-id', data.id);
             formData.append('video-file', localSaveBlob);
             formData.append('name', formData.get('video-file').name + '.webm');
-            formData.append('tag-dto', JSON.stringify(config.createSteps()));
+            formData.append('tag-dto', JSON.stringify(steps));
             var xhr = new XMLHttpRequest();
             xhr.open("POST", config.url + '/api/video-upload-app/', true);
             xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
