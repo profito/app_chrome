@@ -6,6 +6,7 @@ body {
   border: none;
   float: left;
   background: #00942c;
+  border: 2px solid #5bb067;
 }
 
 .popap_ux {
@@ -29,12 +30,21 @@ body {
 .window_plugin {
   width: 100%;
   padding-bottom: 15px;
+  background: #fff;
   display: inline-block;
   * {
     font-family: 'Roboto', sans-serif;
   }
   .display_none {
     display: none;
+    &.not_authorization {
+      display: none;
+    }
+  }
+  &.not_authorization {
+    display: inline-block;
+    width: 100%;
+    background: #00942c;
   }
   .btn {
     margin-top: 15px;
@@ -44,7 +54,6 @@ body {
   .item_title {
     font-size: 12px;
     word-wrap: break-word;
-    text-align: center;
   }
   .div_content_text {
     white-space: nowrap;
@@ -52,9 +61,12 @@ body {
     text-overflow: ellipsis;
   }
   .header_popup {
-    font-size: 16px;
+    font-size: 14px;
     margin-top: 15px;
+    margin-bottom: 15px;
     line-height: 16px;
+    text-align: left;
+    color: #808080;
   }
   .id_el *,
   .id_el {
@@ -63,17 +75,16 @@ body {
   }
   .text_el {
     font-size: 14px;
-    text-align: center;
+    text-align: left;
     cursor: pointer;
     a {
       font-size: 14px;
-      color: #3775D6
+      color: #8ab1ff;
+      text-decoration: underline;
     }
   }
   .item_el {
-    padding-top: 5px;
     padding-bottom: 5px;
-    border-bottom: 1px solid #acacac;
   }
   li {
     a:focus {
@@ -101,7 +112,7 @@ body {
     padding-bottom: 15px;
   }
   #task {
-    max-height: 100%;
+    max-height: 285px;
     overflow-y: auto;
   }
   .popover {
@@ -109,7 +120,7 @@ body {
       display: none;
     }
   }
-  .tab-pane{
+  .tab-pane {
     background: #fff;
   }
 }

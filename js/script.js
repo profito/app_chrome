@@ -85,9 +85,9 @@ function renderStep(all_task) {
             "</div></div>";
     }
     $('#task').html(task_dom);
-    $("[data-toggle=popover]").popover({
-        html: true
-    });
+    // $("[data-toggle=popover]").popover({
+    //     html: true
+    // });
     $('.href_url').click(function (e) {
         e.preventDefault();
         openPage($(this).data('id'));
