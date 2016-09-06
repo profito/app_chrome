@@ -17,24 +17,17 @@ function UXC_initialization() {
             $('.uxc_main_block').html(tmpl("UXC_tmpl_start", {}));
             var uxc_btn_play = $('.uxc_btn_play');
             $(uxc_btn_play).click(function () {
-                chrome.runtime.sendMessage({eventPage: "startRec"}, function (obj) {
-                    if (obj.UXC_request == true) {
-                        chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
-                            if (obj.scenario) {
-                                $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
-                                $('.uxc_item_description').text(obj.scenario.description);
-                                UXC_events_next();
-                            }
-                        })
-                    }
-                });
+                chrome.runtime.sendMessage({eventPage: "startRec"});
             });
             if (obj.statusRec != "false") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                    console.log('sc', obj)
                     if (obj.scenario) {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
                         $('.uxc_item_description').text(obj.scenario.description);
                         UXC_events_next();
+                    } else {
+                        alert('нет шагов 1')
                     }
                 })
             }
@@ -47,6 +40,7 @@ function UXC_events_next() {
     var uxc_btn_stop = $('.uxc_btn_stop');
     $(uxc_item_next).click(function () {
         chrome.runtime.sendMessage({eventPage: "nextStep"}, function (obj) {
+            console.log('sc', obj)
             if (obj.scenario) {
                 if (obj.scenario == "finish") {
                     $('.uxc_main_block').html(tmpl("UXC_tmpl_stop"));
@@ -55,6 +49,8 @@ function UXC_events_next() {
                 } else {
                     $('.uxc_item_description').text(obj.scenario.description);
                 }
+            } else {
+                alert('нет шагов 2')
             }
         })
     });
@@ -94,6 +90,26 @@ function UXC_active_step() {
         $(uxc_active_el).addClass('uxc_active_step');
     }
 }
+
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        console.log(request)
+        if (request.statusRESS == "true") {
+            chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                console.log('sc', obj)
+                if (obj.scenario) {
+                    $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                    $('.uxc_item_description').text(obj.scenario.description);
+                    UXC_events_next();
+                } else {
+                    alert('нет шагов')
+                }
+            })
+        } else {
+            alert('уже записывают')
+        }
+    });
+
 
 //Шаблонизатор http://javascript.ru/unsorted/templating 03.08.16
 (function () {

@@ -37,10 +37,13 @@ var config = {
     // },
     getActiveStep: function () {
         // this.getScenario();
-
-        uxc_debugger('orderNum', this.scenario().steps[this.activeStep()].orderNum);
-        localStorage.setItem('orderNum', (this.scenario().steps[this.activeStep()].orderNum));
-        return this.scenario().steps[this.activeStep()]
+        if (this.scenario().steps.length == 0) {
+            return false;
+        } else {
+            uxc_debugger('orderNum', this.scenario().steps[this.activeStep()].orderNum);
+            localStorage.setItem('orderNum', (this.scenario().steps[this.activeStep()].orderNum));
+            return this.scenario().steps[this.activeStep()]
+        }
     },
     resetStep: function () {
         localStorage.setItem('activeStep', 0);
@@ -121,27 +124,28 @@ function saveVideo() {
     uxc_debugger('saveVideo', 'зашел');
     var steps = config.createSteps();
     uxc_debugger('createSteps', config.createSteps());
-    $.ajax({
-        url: config.url + '/api/tester/create-task',
-        data: {orderId: localStorage.getItem('orderId')},
-        success: function (data) {
-            uxc_debugger('/api/tester/create-task success data', data);
-            uxc_debugger('saveVideo', 'зашел');
-            var formData = new FormData();
-            formData.append('task-id', data.id);
-            formData.append('video-file', localSaveBlob);
-            formData.append('name', formData.get('video-file').name + '.webm');
-            formData.append('tag-dto', JSON.stringify(steps));
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", config.url + '/api/video-upload-app/', true);
-            xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
-            xhr.send(formData);
-        },
-        error: function (data) {
-            uxc_debugger('error', data);
-        },
-        dataType: 'json'
-    });
+    uxc_debugger('localStorage.getItem(taskIdResponse)', localStorage.getItem('taskIdResponse'));
+    uxc_debugger('saveVideo', 'зашел');
+    var formData = new FormData();
+    formData.append('task-id', localStorage.getItem('taskIdResponse'));
+    formData.append('video-file', localSaveBlob);
+    formData.append('name', formData.get('video-file').name + '.webm');
+    formData.append('tag-dto', JSON.stringify(steps));
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", config.url + '/api/video-upload-app/', true);
+    xhr.setRequestHeader('X-CSRF-Token', config.csrf_token);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            console.log(xhr.responseText);
+            location.reload();
+        } else {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 404) {
+                location.reload();
+            }
+        }
+    };
+    xhr.send(formData);
+
 }
 
 
@@ -161,8 +165,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         sendResponse({statusRec: localStorage.getItem('RecUxc')});
     }
     if (request.eventPage == "getStep") {
-        sendResponse({scenario: config.getActiveStep()});
-        config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
+        if (config.getActiveStep()) {
+            sendResponse({scenario: config.getActiveStep()});
+            config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
+        } else {
+            sendResponse({scenario: false});
+            location.reload();
+        }
     }
     if (request.eventPage == "nextStep") {
         if (config.activeStep() >= (config.scenario().steps.length - 1)) {
@@ -170,21 +179,44 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             sendResponse({scenario: 'finish'});
         } else {
             config.nextStep();
-            sendResponse({scenario: config.getActiveStep()});
-            config.addTime();
+            if (config.getActiveStep()) {
+                sendResponse({scenario: config.getActiveStep()});
+                config.addTime();
+            } else {
+                sendResponse({scenario: false});
+                location.reload();
+            }
         }
     }
     if (request.eventPage == "startRec") {
-        localStorage.setItem('startDate', new Date());
-        getUserConfigs();
-        config.resetStep();
-        sendResponse({UXC_request: true});
-        localStorage.setItem('RecUxc', true);
-        sendResponse({UXC_request: localStorage.getItem('RecUxc')});
+        var orderId = localStorage.getItem('orderId');
+        $.ajax({
+            url: config.url + '/api/tester/create-task?orderId=' + orderId,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                localStorage.setItem('taskIdResponse', data.id);
+                localStorage.setItem('startDate', new Date());
+                getUserConfigs();
+                config.resetStep();
+                localStorage.setItem('RecUxc', true);
+                chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                    chrome.tabs.sendMessage(tabs[0].id, {statusRESS: "true"});
+                });
+            },
+            error: function (data) {
+                localStorage.setItem('RecUxc', false);
+                chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                    chrome.tabs.sendMessage(tabs[0].id, {statusRESS: "false"});
+                });
+            }
+        });
+
     }
     if (request.eventPage == "pauseRec") {
         recorder.pauseRecording();
         sendResponse({UXC_request: true});
+
     }
     if (request.eventPage == "stopRec") {
         getUserConfigs();
@@ -297,22 +329,37 @@ function startRender() {
     uxc_debugger('orderId из истории', localStorage.getItem('orderId'));
     var list_task = JSON.parse(localStorage.getItem('allTask'));
     for (var num in list_task) {
-        uxc_debugger('list_task' + num, list_task[num]);
+        // uxc_debugger('list_task' + num, list_task[num]);
         if (list_task[num].id == orderId) {
             mainPageUrl = list_task[num].url;
             mainPageScenario = list_task[num].scenario;
             localStorage.setItem('scenario', JSON.stringify(mainPageScenario));
         }
     }
-    if (mainPageUrl.split(':')[0] == 'http' || mainPageUrl.split(':')[0] == 'https') {
-        chrome.tabs.create({url: mainPageUrl}, function (tabs) {
-            config.tabId = tabs.id;
-        });
+
+    uxc_debugger('mainPageUrl.split(.)[0]', mainPageUrl.split('.')[0]);
+    var newMainPageUrl = '';
+    if (mainPageUrl.split('.')[0] == 'www') {
+        newMainPageUrl = 'http://' + mainPageUrl;
     } else {
-        chrome.tabs.create({url: 'http://' + mainPageUrl}, function (tabs) {
-            config.tabId = tabs.id;
-        });
+        if (mainPageUrl.split(':')[0] == 'https') {
+            newMainPageUrl = mainPageUrl;
+        } else {
+            if (mainPageUrl.split(':')[0] == 'http') {
+                newMainPageUrl = mainPageUrl;
+            } else {
+                newMainPageUrl = 'http://' + mainPageUrl;
+            }
+        }
     }
+
+    chrome.tabs.create({url: newMainPageUrl}, function (tabs) {
+        config.tabId = tabs.id;
+        uxc_debugger('tabs', tabs);
+        localStorage.setItem('tabsId', tabs.id);
+        localStorage.setItem('index', tabs.index);
+
+    });
     uxc_debugger('startRender', '');
 }
 
@@ -530,17 +577,17 @@ function stopScreenRecording() {
 
         convertElement(recorder.blob);
 
+        localSaveBlob = recorder.blob;
+
         saveVideo();
 
         //сохранение видео не клиент
         //invokeSaveAsDialog(recorder.blob, 'UXCrowd-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm');
 
-        localSaveBlob = recorder.blob;
+        /*
 
-        setTimeout(function () {
-            setDefaults();
-            chrome.runtime.reload();
-        }, 1000);
+
+         */
 
         askToStopExternalStreams();
 
@@ -918,7 +965,10 @@ function getUserConfigs() {
 
         if (enableMicrophone) {
             lookupForHTTPsTab(function (notification) {
+                uxc_debugger('notification', notification);
+
                 if (notification === 'no-https-tab') {
+
                     // skip microphone
                     captureDesktop();
                 }
@@ -991,40 +1041,52 @@ var alreadyTriedToOpenAnHTTPsPage = false;
 function lookupForHTTPsTab(callback) {
     chrome.tabs.query({
         // active: true,
-        // currentWindow: true
+        // currentWindow: true,
+        index: Number(localStorage.getItem('index'))
+        //id:localStorage.getItem('tabsId'),
     }, function (tabs) {
-        var tabFound;
-        tabs.forEach(function (tab) {
-            if (!tabFound && tab.url.length && tab.url.indexOf('https:') === 0 && !tab.incognito) {
-                tabFound = tab;
-            }
+        uxc_debugger('tabs2', tabs[0]);
 
-            if (tab.active && tab.selected && tab.url.length && tab.url.indexOf('https:') === 0 && !tab.incognito) {
-                tabFound = tab;
-            }
-        });
+        var tabFound = tabs[0];
+        uxc_debugger('tabFound.url.indexOf(https:)==-1', tabFound.url.indexOf('https:') == '-1');
 
-        if (tabFound) {
-            executeScript(tabFound.id);
-        } else if (!alreadyTriedToOpenAnHTTPsPage) {
-            alreadyTriedToOpenAnHTTPsPage = true;
-
-            // create new HTTPs tab and try again
+        if (tabFound.url.indexOf('https:') != '-1') {
+            executeScript(tabFound.id, tabFound.id);
+        } else {
             chrome.tabs.create({
                 url: 'https://xn--b1ab8aj6d.xn--p1ai/test/index.html'
-            }, function () {
-                lookupForHTTPsTab(callback);
+            }, function (tabNew) {
+                uxc_debugger('tabNew', tabNew)
+                executeScript(tabNew.id, tabFound.id);
             });
         }
+
+        //
+        //
+        // if (tabFound) {
+        //     executeScript(tabFound.id);
+        // } else if (!alreadyTriedToOpenAnHTTPsPage) {
+        //     alreadyTriedToOpenAnHTTPsPage = true;
+        //
+        //     // create new HTTPs tab and try again
+        //     chrome.tabs.create({
+        //         url: 'https://xn--b1ab8aj6d.xn--p1ai/test/index.html'
+        //     }, function () {
+        //         lookupForHTTPsTab(callback);
+        //     });
+        // }
     });
 }
 
-function executeScript(tabId) {
+function executeScript(tabIdNew, tabId) {
+    uxc_debugger('executeScript tabId ', tabId);
+
+
+    chrome.tabs.executeScript(tabIdNew, {
+        file: 'js/content-script.js'
+    });
     chrome.tabs.update(tabId, {
         active: true
-    });
-    chrome.tabs.executeScript(tabId, {
-        file: 'js/content-script.js'
     });
 }
 
