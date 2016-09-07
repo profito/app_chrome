@@ -3,7 +3,7 @@
   border-radius: 4px;
   background: white;
   position: fixed;
-  bottom: 10px;
+  top: 10px;
   right: 10px;
   width: 300px !important;
   z-index: 1000000000; }
@@ -100,7 +100,7 @@
     transition: all 0.2s linear, padding 0s linear;
     position: relative; }
     .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step {
-      border: 1px solid #f04646;
+      border: 1px solid #5ec700;
       border-radius: 4px;
       transition: all 0s linear, padding 0s linear;
       opacity: 1;
@@ -111,17 +111,23 @@
           text-align: center;
           color: #808080; }
           .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_header_more .two_line {
+            margin-top: 5px;
             display: inline-block;
             border-top: 1px solid #808080;
             border-bottom: 1px solid #808080;
             height: 3px;
             width: 15px; }
-        .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_header_rec {
+        .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_close {
           position: absolute;
-          font-size: 25px;
-          right: 15px;
-          color: #f04646;
-          top: 7px; }
+          top: 5px;
+          right: 7px;
+          transform: rotateZ(-45deg);
+          font-size: 20px;
+          font-weight: 700;
+          color: #242424;
+          cursor: pointer; }
+          .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_close::selection {
+            background: #fff; }
       .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_number_element {
         width: 100%;
         display: inline-block;
@@ -142,6 +148,20 @@
         color: #808080;
         margin: 10px 15px;
         cursor: pointer; }
+      .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec {
+        position: absolute;
+        font-size: 25px;
+        left: 10px;
+        color: #f04646;
+        bottom: 24px;
+        line-height: 2px; }
+        .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec span {
+          position: absolute;
+          font-size: 14px;
+          line-height: 16px;
+          white-space: nowrap;
+          left: 15px;
+          top: -6px; }
     .UXC_Plugins .uxc_main_block .uxc_item .uxc_item_description {
       padding: 10px;
       color: #808080; }
@@ -175,5 +195,48 @@
         .UXC_Plugins .uxc_main_block .uxc_navigation_menu .uxc_navigation_item button:hover {
           background: darkgray;
           color: white; }
+
+#uxc_main_modal {
+  background: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000; }
+  #uxc_main_modal .uxc_content_modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    color: white;
+    text-align: center; }
+    #uxc_main_modal .uxc_content_modal .uxc_text_modal {
+      text-align: center;
+      font-size: 16px;
+      line-height: 24px;
+      font-family: 'Open Sans', sans-serif !important;
+      color: white;
+      margin-bottom: 40px; }
+    #uxc_main_modal .uxc_content_modal .uxc_printscreen {
+      width: 500px;
+      height: 218px;
+      display: inline-block;
+      background: url("chrome-extension://imehafdibiebgjhlfjhgfpljhapekiab/images/printscreen.png") no-repeat 50% 50%;
+      background-size: cover;
+      margin-top: 20px; }
+    #uxc_main_modal .uxc_content_modal .uxc_btn_modal {
+      display: inline-block;
+      background: #f24444;
+      color: #fff;
+      padding: 8px 25px 10px;
+      border-radius: 4px;
+      line-height: 18px;
+      font-size: 16px;
+      text-align: center;
+      min-width: 150px;
+      font-family: 'Open Sans', sans-serif !important;
+      cursor: pointer; }
 
 /*# sourceMappingURL=uxc_injected_style.css.map */

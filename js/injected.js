@@ -13,13 +13,38 @@ function UXC_initialization() {
             $('body').append("<div class='UXC_Plugins'></div>");
             //заполняем его основным шаблоном
             $('.UXC_Plugins').html(tmpl("UXC_tmpl_main", {}));
-            $('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
-            $('.uxc_main_block').html(tmpl("UXC_tmpl_start", {}));
-            var uxc_btn_play = $('.uxc_btn_play');
-            $(uxc_btn_play).click(function () {
-                chrome.runtime.sendMessage({eventPage: "startRec"});
-            });
+            //$('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
+            //$('body').html(tmpl("UXC_tmpl_start", {}));
+            UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее');
+            var interval_uxc_btn = window.setInterval(function () {
+                console.log('qwe')
+                if ($('.uxc_btn_play').length > 0) {
+                    $('.uxc_btn_play').click(function () {
+                        document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+                        chrome.runtime.sendMessage({eventPage: "startRec"});
+                    });
+                    clearInterval(interval_uxc_btn);
+                }
+            }, 1000);
             if (obj.statusRec != "false") {
+                chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                    console.log('sc', obj);
+                    if (obj.scenario) {
+                        $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                        $('.uxc_item_description').text(obj.scenario.description);
+                        UXC_events_next();
+                    } else {
+                        UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
+                    }
+                })
+            }
+        }
+    });
+
+    chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+            console.log(request);
+            if (request.statusRecEl == "true") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
                     console.log('sc', obj)
                     if (obj.scenario) {
@@ -27,15 +52,87 @@ function UXC_initialization() {
                         $('.uxc_item_description').text(obj.scenario.description);
                         UXC_events_next();
                     } else {
-                        alert('нет шагов 1')
+                        UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
                     }
                 })
+            } else {
+                UXC_open_modal('Данный тест уже записывается', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
             }
-        }
-    });
+        });
+
 }
 
+function next(num) {
+    switch (num) {
+        case 1:
+            UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее', '');
+            break;
+        case 2:
+            UXC_open_modal('Пожалуйста, внимательно читайте все задания<br> и громко проговаривайте все ваши действия вслух.', 'next(3)', 'Далее', '');
+            break;
+        case 3:
+            UXC_open_modal('Текст заданий вы увидите в окне в правом верхнем углу экрана <div class="uxc_printscreen"></div>', 'next(4)', 'Далее', '');
+            break;
+        case 4:
+            UXC_open_modal('Если вы готовы приступить к тестированию,<br> нажмите кнопку «Начать запись»', '', 'Начать запись', 'uxc_btn_play');
+            break;
+    }
+}
+
+
+function UXC_open_modal(text, func, text_btn, uxc_class) {
+    if (func == "two_btn") {
+        if (document.getElementById('uxc_main_modal')) {
+            document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+        }
+        var uxc_element = document.createElement('div');
+        uxc_element.id = "uxc_main_modal";
+        uxc_element.innerHTML = tmpl("UXC_tmpl_modal_two", {
+            text: text,
+            text_one_btn: text_btn,
+            uxc_close_btn: 'uxc_close_btn',
+            text_two_btn: uxc_class,
+            function_one: '',
+            function_two: 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'))'
+        });
+        document.getElementsByTagName('body')[0].appendChild(uxc_element);
+    } else {
+        if (document.getElementById('uxc_main_modal')) {
+            document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+        }
+        var uxc_element = document.createElement('div');
+        uxc_element.id = "uxc_main_modal";
+        uxc_element.innerHTML = tmpl("UXC_tmpl_modal", {
+            text: text,
+            funcModal: func,
+            textBtn: text_btn,
+            uxc_class: uxc_class
+        });
+        document.getElementsByTagName('body')[0].appendChild(uxc_element);
+    }
+}
+
+
 function UXC_events_next() {
+    var interval_uxc_close = window.setInterval(function () {
+        if ($('.uxc_close').length > 0) {
+            $('.uxc_close').click(function () {
+                UXC_open_modal('В данный момент происходит запись видео,<br> Вы уверены что хотите прервать запись?', 'two_btn', 'Да', 'Нет')
+                var interval_uxc_close_yes = window.setInterval(function () {
+                    console.log('uxc_close');
+                    if ($('.uxc_close_btn').length > 0) {
+                        $('.uxc_close_btn').click(function () {
+                            chrome.runtime.sendMessage({eventPage: "exitRec"}, function (obj) {});
+                            document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+                            document.getElementsByTagName('body')[0].removeChild(document.getElementsByClassName('UXC_Plugins')[0]);
+                        });
+                        clearInterval(interval_uxc_close_yes);
+                    }
+                }, 500);
+            });
+            clearInterval(interval_uxc_close);
+        }
+    }, 333);
     var uxc_item_next = $('.uxc_item_next');
     var uxc_btn_stop = $('.uxc_btn_stop');
     $(uxc_item_next).click(function () {
@@ -50,7 +147,7 @@ function UXC_events_next() {
                     $('.uxc_item_description').text(obj.scenario.description);
                 }
             } else {
-                alert('нет шагов 2')
+                UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
             }
         })
     });
@@ -90,25 +187,6 @@ function UXC_active_step() {
         $(uxc_active_el).addClass('uxc_active_step');
     }
 }
-
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        console.log(request)
-        if (request.statusRESS == "true") {
-            chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
-                console.log('sc', obj)
-                if (obj.scenario) {
-                    $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
-                    $('.uxc_item_description').text(obj.scenario.description);
-                    UXC_events_next();
-                } else {
-                    alert('нет шагов')
-                }
-            })
-        } else {
-            alert('уже записывают')
-        }
-    });
 
 
 //Шаблонизатор http://javascript.ru/unsorted/templating 03.08.16

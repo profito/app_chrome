@@ -1,20 +1,40 @@
-//var idApp = 'imehafdibiebgjhlfjhgfpljhapekiab';
-var idApp = 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
+var idApp = 'imehafdibiebgjhlfjhgfpljhapekiab';
+//var idApp = 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
 
 if (!window.jQuery) {
     document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>')
 }
 $(window).ready(function () {
     setTimeout(function () {
-        if ((window.location.href.indexOf('localhost') != -1) || (window.location.href.indexOf('uxcrowd') != -1)) {
-            $('.btn.btn-success.btn-sm').click(function () {
-                chrome.runtime.sendMessage({
-                    eventPage: "setBtn",
-                    orderId: $(this).parent().attr('action').split('=')[1]
-                }, function (obj) {
-                    // console.log(obj)
-                });
-            })
+        if (window.location.href.indexOf('app-tester-home/new-tasks') != -1) {
+            var intervalID = window.setInterval(function () {
+                if ($('.btn.btn-success.btn-sm').length > 0) {
+                    $('.btn.btn-success.btn-sm').click(function () {
+                        chrome.runtime.sendMessage({
+                            eventPage: "setBtn",
+                            orderId: $(this).parent().attr('action').split('=')[1]
+                        }, function (obj) {
+                            // console.log(obj)
+                        });
+                    });
+                    clearInterval(intervalID)
+                }
+            }, 1000)
+        }
+        if (window.location.href.indexOf('instruction4/instruction') != -1) {
+            var intervalInstruction = window.setInterval(function () {
+                if ($('button[type=submit]').length > 0) {
+                    $('button[type=submit]').click(function (e) {
+                        e.preventDefault();
+                        chrome.runtime.sendMessage({
+                            eventPage: "setBtn",
+                            orderId: '1'
+                        }, function (obj) {
+                        });
+                    });
+                    clearInterval(intervalInstruction)
+                }
+            }, 1000)
         }
         chrome.runtime.sendMessage({eventPage: "getIncludeUrl"}, function (obj) {
             //console.log('Cтатус записи', obj.statusRec);

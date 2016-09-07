@@ -12,8 +12,8 @@ var config = {
     text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
     text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
     tabId: 0,
-    //url: 'https://lk.uxcrowd.ru:8081',
-    url: 'http://localhost:9797',
+    url: 'http://test.lk.uxcrowd.ru',
+    //url: 'http://localhost:9797',
     //url: 'http://192.168.2.121:9797/',
     debug: true,
     allTime: [],
@@ -101,7 +101,7 @@ function dateDiff(date1, date2) {
     return hours + ':' + minutes + ':' + seconds;
 }
 
-
+localStorage.setItem('tabRecAudio', false);
 localStorage.setItem('RecUxc', false);
 localStorage.setItem('openPluginsUxc', false);
 
@@ -145,9 +145,7 @@ function saveVideo() {
         }
     };
     xhr.send(formData);
-
 }
-
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "config") {
@@ -172,6 +170,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             sendResponse({scenario: false});
             location.reload();
         }
+    }
+    if (request.eventPage == "exitRec") {
+        var idTab = Number(localStorage.getItem('tabRecAudio'));
+        chrome.tabs.remove(idTab, function (obj) {
+            uxc_debugger('obj close tab recAudio', obj);
+            uxc_debugger('Tab RecAudio closed');
+        });
+        location.reload();
     }
     if (request.eventPage == "nextStep") {
         if (config.activeStep() >= (config.scenario().steps.length - 1)) {
@@ -201,13 +207,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 config.resetStep();
                 localStorage.setItem('RecUxc', true);
                 chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {statusRESS: "true"});
+                    chrome.tabs.sendMessage(tabs[0].id, {statusRecEl: "true"});
                 });
             },
             error: function (data) {
                 localStorage.setItem('RecUxc', false);
                 chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {statusRESS: "false"});
+                    chrome.tabs.sendMessage(tabs[0].id, {statusRecEl: "false"});
                 });
             }
         });
@@ -216,13 +222,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "pauseRec") {
         recorder.pauseRecording();
         sendResponse({UXC_request: true});
-
     }
     if (request.eventPage == "stopRec") {
         getUserConfigs();
         localStorage.setItem('RecUxc', false);
         localStorage.setItem('openPluginsUxc', false);
         sendResponse({UXC_request: localStorage.getItem('RecUxc')});
+        if (localStorage.getItem('tabRecAudio') != false) {
+            var idTab = Number(localStorage.getItem('tabRecAudio'));
+            chrome.tabs.remove(idTab, function (obj) {
+                uxc_debugger('obj close tab recAudio', obj);
+                uxc_debugger('Tab RecAudio closed');
+            })
+        }
+        localStorage.setItem('tabRecAudio', false);
     }
     if (request.eventPage == "setBtn") {
         authorization();
@@ -386,6 +399,7 @@ function captureDesktop() {
         recorder.stream.onended();
         return;
     }
+
 
     chrome.browserAction.setIcon({
         path: 'images/main-icon.png'
@@ -1054,11 +1068,13 @@ function lookupForHTTPsTab(callback) {
             executeScript(tabFound.id, tabFound.id);
         } else {
             chrome.tabs.create({
-                url: 'https://xn--b1ab8aj6d.xn--p1ai/test/index.html'
+                url: 'https://test.uxcrowd.ru/recaudios.html'
             }, function (tabNew) {
-                uxc_debugger('tabNew', tabNew)
+                localStorage.setItem('tabRecAudio', tabNew.id);
+                uxc_debugger('tabNew', tabNew);
                 executeScript(tabNew.id, tabFound.id);
             });
+
         }
 
         //
@@ -1070,7 +1086,7 @@ function lookupForHTTPsTab(callback) {
         //
         //     // create new HTTPs tab and try again
         //     chrome.tabs.create({
-        //         url: 'https://xn--b1ab8aj6d.xn--p1ai/test/index.html'
+        //         url: 'https://test.uxcrowd.ru/recaudios.html'
         //     }, function () {
         //         lookupForHTTPsTab(callback);
         //     });
