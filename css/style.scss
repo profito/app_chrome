@@ -35,10 +35,16 @@ body {
   * {
     font-family: 'Roboto', sans-serif;
   }
+  &.greenColor{
+    background: #00942c;
+  }
   .display_none {
     display: none;
     &.not_authorization {
       display: none;
+    }
+    &.authorization{
+      overflow: hidden;
     }
   }
   &.not_authorization {

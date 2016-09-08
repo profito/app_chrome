@@ -30,10 +30,14 @@ body {
   display: inline-block; }
   .window_plugin * {
     font-family: 'Roboto', sans-serif; }
+  .window_plugin.greenColor {
+    background: #00942c; }
   .window_plugin .display_none {
     display: none; }
     .window_plugin .display_none.not_authorization {
       display: none; }
+    .window_plugin .display_none.authorization {
+      overflow: hidden; }
   .window_plugin.not_authorization {
     display: inline-block;
     width: 100%;

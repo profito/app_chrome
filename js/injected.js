@@ -8,16 +8,18 @@ var UXC_js = {
 function UXC_initialization() {
     console.log('UXC_initialization');
     chrome.runtime.sendMessage({eventPage: "statusRec"}, function (obj) {
-        if (obj.openPluginsUxc != "false") {
+        console.log('obj.openPluginsUxc', obj);
+        if (obj.openPluginsUxc != "false" && window.location.href.indexOf(obj.host_site) != -1 && window.location.href.indexOf("https://www.google.ru/_/chrome/newtab") == -1) {
             //добавляем на страницу UXC контейнер
             $('body').append("<div class='UXC_Plugins'></div>");
             //заполняем его основным шаблоном
             $('.UXC_Plugins').html(tmpl("UXC_tmpl_main", {}));
             //$('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
             //$('body').html(tmpl("UXC_tmpl_start", {}));
-            UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее');
+            if (obj.helpOpen == "true") {
+                UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее', 'uxc_green');
+            }
             var interval_uxc_btn = window.setInterval(function () {
-                console.log('qwe')
                 if ($('.uxc_btn_play').length > 0) {
                     $('.uxc_btn_play').click(function () {
                         document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
@@ -46,7 +48,7 @@ function UXC_initialization() {
             console.log(request);
             if (request.statusRecEl == "true") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
-                    console.log('sc', obj)
+                    console.log('sc', obj);
                     if (obj.scenario) {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
                         $('.uxc_item_description').text(obj.scenario.description);
@@ -55,8 +57,16 @@ function UXC_initialization() {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
                     }
                 })
-            } else {
-                UXC_open_modal('Данный тест уже записывается', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
+            }
+            if (request.statusRecEl == "false") {
+                UXC_open_modal(' К сожалению, данный тест уже завершен.', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
+            }
+            console.log('request', request);
+            if (request.statusSend == "true") {
+                UXC_open_modal('Спасибо! Ваше видео загрузилось!', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Ok', '');
+            }
+            if (request.statusSend == "false") {
+                UXC_open_modal('Ошибка! Попробуйте позднее!', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Ok', '');
             }
         });
 
@@ -65,26 +75,26 @@ function UXC_initialization() {
 function next(num) {
     switch (num) {
         case 1:
-            UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее', '');
+            UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее', 'uxc_green');
             break;
         case 2:
-            UXC_open_modal('Пожалуйста, внимательно читайте все задания<br> и громко проговаривайте все ваши действия вслух.', 'next(3)', 'Далее', '');
+            UXC_open_modal('Пожалуйста, внимательно читайте все задания<br> и громко проговаривайте все ваши действия вслух.', 'next(3)', 'Далее', 'uxc_green');
             break;
         case 3:
-            UXC_open_modal('Текст заданий вы увидите в окне в правом верхнем углу экрана <div class="uxc_printscreen"></div>', 'next(4)', 'Далее', '');
+            UXC_open_modal('Текст заданий вы увидите в окне в правом верхнем углу экрана <div class="uxc_printscreen"></div>', 'next(4)', 'Далее', 'uxc_green');
             break;
         case 4:
-            UXC_open_modal('Если вы готовы приступить к тестированию,<br> нажмите кнопку «Начать запись»', '', 'Начать запись', 'uxc_btn_play');
+            UXC_open_modal('Если вы готовы приступить к тестированию,<br> нажмите кнопку «Начать запись»', '', 'Начать запись', 'uxc_btn_play uxc_green');
             break;
     }
 }
 
 
 function UXC_open_modal(text, func, text_btn, uxc_class) {
+    if (document.getElementById('uxc_main_modal')) {
+        document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+    }
     if (func == "two_btn") {
-        if (document.getElementById('uxc_main_modal')) {
-            document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
-        }
         var uxc_element = document.createElement('div');
         uxc_element.id = "uxc_main_modal";
         uxc_element.innerHTML = tmpl("UXC_tmpl_modal_two", {
@@ -97,18 +107,24 @@ function UXC_open_modal(text, func, text_btn, uxc_class) {
         });
         document.getElementsByTagName('body')[0].appendChild(uxc_element);
     } else {
-        if (document.getElementById('uxc_main_modal')) {
-            document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
+        if (func == "no_btn") {
+            var uxc_element = document.createElement('div');
+            uxc_element.id = "uxc_main_modal";
+            uxc_element.innerHTML = tmpl("UXC_tmpl_modal_no_btn", {
+                text: text
+            });
+            document.getElementsByTagName('body')[0].appendChild(uxc_element);
+        } else {
+            var uxc_element = document.createElement('div');
+            uxc_element.id = "uxc_main_modal";
+            uxc_element.innerHTML = tmpl("UXC_tmpl_modal", {
+                text: text,
+                funcModal: func,
+                textBtn: text_btn,
+                uxc_class: uxc_class
+            });
+            document.getElementsByTagName('body')[0].appendChild(uxc_element);
         }
-        var uxc_element = document.createElement('div');
-        uxc_element.id = "uxc_main_modal";
-        uxc_element.innerHTML = tmpl("UXC_tmpl_modal", {
-            text: text,
-            funcModal: func,
-            textBtn: text_btn,
-            uxc_class: uxc_class
-        });
-        document.getElementsByTagName('body')[0].appendChild(uxc_element);
     }
 }
 
@@ -122,7 +138,8 @@ function UXC_events_next() {
                     console.log('uxc_close');
                     if ($('.uxc_close_btn').length > 0) {
                         $('.uxc_close_btn').click(function () {
-                            chrome.runtime.sendMessage({eventPage: "exitRec"}, function (obj) {});
+                            chrome.runtime.sendMessage({eventPage: "exitRec"}, function (obj) {
+                            });
                             document.getElementsByTagName('body')[0].removeChild(document.getElementById('uxc_main_modal'));
                             document.getElementsByTagName('body')[0].removeChild(document.getElementsByClassName('UXC_Plugins')[0]);
                         });
@@ -159,6 +176,7 @@ function UXC_events_stop() {
     $(uxc_btn_stop).click(function () {
         chrome.runtime.sendMessage({eventPage: "stopRec"}, function (obj) {
             $('.UXC_Plugins').remove();
+            UXC_open_modal('Пожалуйста, не закрывайте это окно. Идет загрузка видео', 'no_btn');
         });
     });
 }

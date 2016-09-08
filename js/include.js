@@ -21,7 +21,21 @@ $(window).ready(function () {
                 }
             }, 1000)
         }
-        if (window.location.href.indexOf('instruction4/instruction') != -1) {
+        if (window.location.href.indexOf('app-tester-home') != -1) {
+            var intervalTesterHome = window.setInterval(function () {
+                if ($('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').length > 0) {
+                    $('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').click(function () {
+                        chrome.runtime.sendMessage({
+                            eventPage: "setBtn",
+                            orderId: 2
+                        }, function (obj) {
+                        });
+                    });
+                    clearInterval(intervalTesterHome)
+                }
+            }, 1000)
+        }
+        if (window.location.href.indexOf('instruction4') != -1) {
             var intervalInstruction = window.setInterval(function () {
                 if ($('button[type=submit]').length > 0) {
                     $('button[type=submit]').click(function (e) {

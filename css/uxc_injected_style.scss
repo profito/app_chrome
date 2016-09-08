@@ -115,7 +115,7 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
       transition: all 0.2s linear, padding 0s linear;
       position: relative;
       &.uxc_active_step {
-        border: 1px solid #5ec700;
+        border: 3px solid #5ec700;
         border-radius: 4px;
         transition: all 0s linear, padding 0s linear;
         opacity: 1;
@@ -301,6 +301,9 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
       min-width: 150px;
       font-family: 'Open Sans', sans-serif !important;
       cursor: pointer;
+      &.uxc_green{
+        background: #5ec700;
+      }
     }
   }
 }
