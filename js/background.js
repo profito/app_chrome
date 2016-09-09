@@ -50,7 +50,7 @@ var config = {
     },
     addTime: function () {
         this.allTime.push({
-            startTime: dateDiff(localStorage.getItem('startDate'), new Date()),
+            startTime: '00:' + localStorage.getItem('mainTimeVideo'),
             orderNum: localStorage.getItem('orderNum')
         });
         uxc_debugger('this.allTime', this.allTime);
@@ -776,11 +776,17 @@ function setBadgeText(text) {
 }
 
 var initialTime, timer;
-
+function mainTimeVideo(time) {
+    if(time.split(':')[0].length===1){
+        time='0'+time.split(':')[0]+":"+time.split(':')[1];
+    }
+    localStorage.setItem('mainTimeVideo', time);
+}
 function checkTime() {
     if (!initialTime) return;
     var timeDifference = Date.now() - initialTime;
     var formatted = convertTime(timeDifference);
+    mainTimeVideo(formatted);
     setBadgeText(formatted);
 
     chrome.browserAction.setTitle({
@@ -797,7 +803,7 @@ function convertTime(miliseconds) {
     seconds += '';
 
     if (minutes.length === 1) {
-        // minutes = '0' + minutes;
+        //minutes = '0' + minutes;
     }
 
     if (seconds.length === 1) {
