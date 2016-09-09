@@ -14,7 +14,7 @@ var config = {
     tabId: 0,
     url: 'https://testlk.uxcrowd.ru',
     //url: 'http://localhost:9797',
-    //url: 'http://192.168.2.121:9797/',
+    //url: 'https://lk.uxcrowd.ru',
     debug: false,
     allTime: [],
     activeStep: function () {
@@ -201,7 +201,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "exitRec") {
         var idTab = Number(localStorage.getItem('tabRecAudio'));
-        if(localStorage.getItem('tabRecAudio')!="false") {
+        if (localStorage.getItem('tabRecAudio') != "false") {
             chrome.tabs.remove(idTab, function (obj) {
                 localStorage.setItem('tabRecAudio', false);
                 console.log('exitRec закрыли ', localStorage.getItem('tabRecAudio'));
@@ -1140,12 +1140,8 @@ function lookupForHTTPsTab(callback) {
         index: Number(localStorage.getItem('index'))
         //id:localStorage.getItem('tabsId'),
     }, function (tabs) {
-        uxc_debugger('tabs2', tabs[0]);
-
         var tabFound = tabs[0];
-        uxc_debugger('tabFound.url.indexOf(https:)==-1', tabFound.url.indexOf('https:') == '-1');
-
-        if (tabFound.url.indexOf('https:') != '-1') {
+        if (tabFound.url && tabFound.url.indexOf('https:') != '-1') {
             executeScript(tabFound.id, tabFound.id);
         } else {
             chrome.tabs.create({

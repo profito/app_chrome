@@ -1,7 +1,7 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans";
 .UXC_Plugins {
   border-radius: 4px;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   position: fixed;
   top: 10px;
   right: 10px;
@@ -106,17 +106,19 @@
       opacity: 1;
       max-height: 1000px; }
       .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header {
-        width: 100%; }
+        width: 100%;
+        cursor: move; }
         .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_header_more {
           text-align: center;
           color: #808080; }
           .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_header_more .two_line {
-            margin-top: 5px;
+            margin-top: 8px;
             display: inline-block;
             border-top: 1px solid #808080;
             border-bottom: 1px solid #808080;
             height: 3px;
-            width: 15px; }
+            width: 15px;
+            margin-bottom: 5px; }
         .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header .uxc_close {
           position: absolute;
           top: 5px;
@@ -132,7 +134,7 @@
         width: 100%;
         display: inline-block;
         text-align: center;
-        margin: 10px 0 0px;
+        margin: 2px 0 0;
         font-size: 12px;
         color: #808080; }
     .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next {
@@ -223,7 +225,7 @@
       width: 500px;
       height: 218px;
       display: inline-block;
-      background: url("chrome-extension://imehafdibiebgjhlfjhgfpljhapekiab/images/printscreen.png") no-repeat 50% 50%;
+      background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/printscreen.png") no-repeat 50% 50%;
       background-size: cover;
       margin-top: 20px; }
     #uxc_main_modal .uxc_content_modal .uxc_btn_modal {

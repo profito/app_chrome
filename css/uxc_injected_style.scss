@@ -1,6 +1,6 @@
 @import 'https://fonts.googleapis.com/css?family=Open+Sans';
-$idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
-//$idApp: 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
+//$idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
+$idApp: 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
 .UXC_Plugins {
   * {
     vertical-align: baseline;
@@ -17,7 +17,7 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
     }
   }
   border-radius: 4px;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   position: fixed;
   top: 10px;
   right: 10px;
@@ -122,16 +122,18 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
         max-height: 1000px;
         .uxc_panel_header {
           width: 100%;
+          cursor: move;
           .uxc_header_more {
             text-align: center;
             color: #808080;
             .two_line {
-              margin-top: 5px;
+              margin-top: 8px;
               display: inline-block;
               border-top: 1px solid #808080;
               border-bottom: 1px solid #808080;
               height: 3px;
               width: 15px;
+              margin-bottom: 5px;
             }
           }
           .uxc_close {
@@ -152,7 +154,7 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
           width: 100%;
           display: inline-block;
           text-align: center;
-          margin: 10px 0 0px;
+          margin: 2px 0 0;
           font-size: 12px;
           color: #808080;
         }
@@ -301,7 +303,7 @@ $idApp:'imehafdibiebgjhlfjhgfpljhapekiab';
       min-width: 150px;
       font-family: 'Open Sans', sans-serif !important;
       cursor: pointer;
-      &.uxc_green{
+      &.uxc_green {
         background: #5ec700;
       }
     }

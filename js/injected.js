@@ -38,7 +38,9 @@ function UXC_initialization() {
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
                     }
+                    UXC_position();
                 })
+
             }
         }
     });
@@ -53,6 +55,7 @@ function UXC_initialization() {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
                         $('.uxc_item_description').text(obj.scenario.description);
                         UXC_events_next();
+                        UXC_position();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
                     }
@@ -229,3 +232,57 @@ function UXC_active_step() {
         return data ? fn(data) : fn;
     };
 })();
+
+
+function UXC_position() {
+    console.log('UXC_position()');
+    var UXC_block = document.getElementsByClassName("UXC_Plugins")[0];
+    var UXC_block_item = document.getElementsByClassName("uxc_panel_header")[0];
+    delta_x = 0;
+    delta_y = 0;
+    /* Ставим обработчики событий на нажатие и отпускание клавиши мыши */
+    UXC_block_item.onmousedown = saveXY;
+
+    document.onmouseup = clearXY;
+    /* При нажатии кнопки мыши попадаем в эту функцию */
+    function saveXY(obj_event) {
+        /* Получаем текущие координаты курсора */
+        if (obj_event) {
+            x = obj_event.pageX;
+            y = obj_event.pageY;
+        }
+        else {
+            x = window.event.clientX;
+            y = window.event.clientY;
+        }
+        /* Узнаём текущие координаты блока */
+        x_block = UXC_block.offsetLeft;
+        y_block = UXC_block.offsetTop;
+        /* Узнаём смещение */
+        delta_x = x_block - x;
+        delta_y = y_block - y;
+        /* При движении курсора устанавливаем вызов функции moveWindow */
+        document.onmousemove = moveBlock;
+    }
+
+    function clearXY() {
+        document.onmousemove = null; // При отпускании мыши убираем обработку события движения мыши
+    }
+
+    function moveBlock(obj_event) {
+        /* Получаем новые координаты курсора мыши */
+        if (obj_event) {
+            x = obj_event.pageX;
+            y = obj_event.pageY;
+        }
+        else {
+            x = window.event.clientX;
+            y = window.event.clientY;
+        }
+        /* Вычисляем новые координаты блока */
+        new_x = delta_x + x;
+        new_y = delta_y + y;
+        UXC_block.style.top = new_y + "px";
+        UXC_block.style.left = new_x + "px";
+    }
+}
