@@ -105,6 +105,8 @@ localStorage.setItem('RecUxc', false);
 localStorage.setItem('openPluginsUxc', false);
 localStorage.setItem('host_site', '');
 localStorage.setItem('helpOpen', false);
+localStorage.setItem('startTimeStatus', false);
+
 
 var mainPageUrl = '';
 var mainPageScenario = {};
@@ -193,7 +195,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.eventPage == "getStep") {
         if (config.getActiveStep()) {
             sendResponse({scenario: config.getActiveStep()});
-            config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
+            if (localStorage.getItem('startTimeStatus') == 'false') {
+                localStorage.setItem('startTimeStatus', true);
+                config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
+            }
         } else {
             sendResponse({scenario: false});
             location.reload();
@@ -777,8 +782,8 @@ function setBadgeText(text) {
 
 var initialTime, timer;
 function mainTimeVideo(time) {
-    if(time.split(':')[0].length===1){
-        time='0'+time.split(':')[0]+":"+time.split(':')[1];
+    if (time.split(':')[0].length === 1) {
+        time = '0' + time.split(':')[0] + ":" + time.split(':')[1];
     }
     localStorage.setItem('mainTimeVideo', time);
 }
