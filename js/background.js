@@ -1156,7 +1156,7 @@ function lookupForHTTPsTab(callback) {
             executeScript(tabFound.id, tabFound.id);
         } else {
             chrome.tabs.create({
-                url: 'https://test.uxcrowd.ru/recaudios.html'
+                url: 'https://uxcrowd.ru/recaudios.html'
             }, function (tabNew) {
                 console.log('уже есть ', localStorage.getItem('tabRecAudio'));
                 localStorage.setItem('tabRecAudio', tabNew.id);
