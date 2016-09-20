@@ -328,7 +328,7 @@ function authorization() {
         success: function (data) {
             uxc_debugger('Роль', data.role);
             //TODO-front: сделать отдельные оповещения на роли
-            if ((data.role == "ROLE_TESTER")|| (data.role == "NEW_TESTER")) {
+            if ((data.role == "ROLE_TESTER")|| (data.role == "ROLE_NEW_TESTER")) {
                 config.user.authorization = true;
                 uxc_debugger('Данные авторизации', data);
                 getCookiesUXC(config.url, "CSRF-TOKEN", function (csrf_token) {
