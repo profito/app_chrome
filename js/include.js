@@ -21,9 +21,17 @@ $(window).ready(function () {
                 }
             }, 1000)
         }
-        if (window.location.href.indexOf('app-tester-home') != -1) {
+        if ((window.location.href.indexOf('app-tester-home') != -1) || (window.location.href.indexOf('app-new-tester-home') != -1)) {
             var intervalTesterHome = window.setInterval(function () {
                 if ($('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').length > 0) {
+                    $('[action="uxcrowd://?orderId=1"]').click(function () {
+                        chrome.runtime.sendMessage({
+                            eventPage: "setBtn",
+                            orderId: 1
+                        }, function (obj) {
+                        });
+                    });
+
                     $('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').click(function () {
                         chrome.runtime.sendMessage({
                             eventPage: "setBtn",
