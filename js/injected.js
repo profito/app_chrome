@@ -45,6 +45,19 @@ function UXC_initialization() {
                             $('.closeRec').show();
                             UXC_events_stop();
                         }
+
+                        if (obj.status_rec_view == true) {
+                            $('.uxc_header_rec').text('Идет запись');
+                            $('.uxc_item_resume').hide();
+                            $('.uxc_item_pause').show();
+                            $('.uxc_item_next').show();
+                        }
+                        if (obj.status_rec_view == false) {
+                            $('.uxc_item_resume').show();
+                            $('.uxc_item_pause').hide();
+                            $('.uxc_item_next').hide();
+                            $('.uxc_header_rec').text('Запись на паузе');
+                        }
                         UXC_events_next();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
@@ -58,15 +71,11 @@ function UXC_initialization() {
 
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
-            if (request.status_rec == "true") {
-                console.log('Запись');
-                console.log( $('.uxc_header_rec span'));
-                $('.uxc_header_rec').text('Запись');
+            if (request.status_rec == true) {
+                $('.uxc_header_rec').text('Идет запись');
             }
-            if (request.status_rec == "false") {
-                console.log('Пауза');
-                console.log( $('.uxc_header_rec span'));
-                $('.uxc_header_rec').text('Пауза');
+            if (request.status_rec == false) {
+                $('.uxc_header_rec').text('Запись на паузе');
             }
             if (request.statusRecEl == "true") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {

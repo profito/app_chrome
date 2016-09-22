@@ -168,7 +168,7 @@ $red: #f04646;
         .uxc_text_next {
           text-align: center;
           color: #808080;
-          margin: 5px 0;
+          margin: 5px 0 10px;
         }
         .uxc_item_next {
           float: right;
@@ -188,7 +188,7 @@ $red: #f04646;
           left: 10px;
           line-height: 16px;
           color: $red;
-          bottom: 70px;
+          bottom: 65px;
         }
       }
       .uxc_panel_btn {
@@ -206,16 +206,14 @@ $red: #f04646;
           color: #fff;
           margin: 10px 10%;
           border-radius: 4px;
-        }
-        .pauseRec {
-
-        }
-        .resumeRec {
-          background: $red;
-
-        }
-        .closeRec {
-
+          &.uxc_item_pause {
+          }
+          &.uxc_item_resume {
+            background: $red;
+          }
+          &.uxc_btn_stop {
+            background: $red;
+          }
         }
       }
       .uxc_item_description {

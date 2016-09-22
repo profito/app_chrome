@@ -16,7 +16,7 @@ var config = {
     //url: 'https://testlk.uxcrowd.ru',
     url: 'http://localhost:9797',
     //url: 'https://lk.uxcrowd.ru',
-    debug: false,
+    debug: true,
     allTime: [],
     activeStep: function () {
         return localStorage.getItem('activeStep')
@@ -67,6 +67,17 @@ var config = {
             });
         }
         return fullStepAndTime;
+    },
+    allTimePause: function () {
+        return localStorage.getItem('allTimePause')
+    },
+    startPause: function () {
+        Date.now();
+        localStorage.setItem('startTimePause', Date.now());
+    },
+    stopPause: function () {
+        var allPause = (Date.now() - Number(localStorage.getItem('startTimePause'))) + Number(localStorage.getItem('allTimePause'));
+        localStorage.setItem('allTimePause', allPause)
     }
 };
 
@@ -107,6 +118,7 @@ localStorage.setItem('openPluginsUxc', false);
 localStorage.setItem('host_site', '');
 localStorage.setItem('helpOpen', false);
 localStorage.setItem('startTimeStatus', false);
+localStorage.setItem('allTimePause', 0);
 
 var mainPageUrl = '';
 var mainPageScenario = {};
@@ -124,10 +136,10 @@ var uxc_debugger = function (name) {
         console.log(' ');
     }
 };
-
-function status_rec_view(status_rec) {
+var more_status_rec_view = false;
+function status_rec_view() {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {status_rec: status_rec});
+        chrome.tabs.sendMessage(tabs[0].id, {status_rec: more_status_rec_view});
     });
 }
 
@@ -158,9 +170,8 @@ function saveVideo() {
                     uxc_debugger('Tab RecAudio closed');
                 });
             }
-            chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {statusSend: "true"});
-            });
+            chrome.tabs.sendMessage(config.tabId, {statusSend: "true"});
+
             location.reload();
         } else {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 404) {
@@ -171,9 +182,8 @@ function saveVideo() {
                         uxc_debugger('Tab RecAudio closed');
                     });
                 }
-                chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {statusSend: "false"});
-                });
+                chrome.tabs.sendMessage(config.tabId, {statusSend: "false"});
+
                 location.reload();
             }
         }
@@ -203,7 +213,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             sendResponse({
                 scenario: config.getActiveStep(),
                 activeStep: config.activeStep(),
-                allStep: (config.scenario().steps.length)
+                allStep: config.scenario().steps.length,
+                status_rec_view: more_status_rec_view
             });
             if (localStorage.getItem('startTimeStatus') == 'false') {
                 localStorage.setItem('startTimeStatus', true);
@@ -237,7 +248,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 sendResponse({
                     scenario: config.getActiveStep(),
                     activeStep: config.activeStep(),
-                    allStep: (config.scenario().steps.length)
+                    allStep: (config.scenario().steps.length),
+                    status_rec_view: more_status_rec_view
                 });
                 config.addTime();
             } else {
@@ -275,19 +287,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "pauseRec") {
         recorder.pauseRecording();
-        status_rec_view('false');
+        more_status_rec_view = false;
+        status_rec_view();
         config.isPaused = false;
         sendResponse({UXC_request: true});
-
+        config.startPause();
     }
     if (request.eventPage == "resumeRec") {
+        config.stopPause();
         recorder.resumeRecording();
-        status_rec_view('true');
+        more_status_rec_view = true;
+        status_rec_view();
         config.isPaused = true;
         sendResponse({UXC_request: true});
     }
     if (request.eventPage == "stopRec") {
         if (!config.isPaused) {
+            config.stopPause();
             recorder.resumeRecording();
         }
         localStorage.setItem('RecUxc', false);
@@ -652,7 +668,8 @@ function onAccessApproved(chromeMediaSourceId) {
             recorder.startRecording();
             activeTab();
             alreadyHadGUMError = false;
-            status_rec_view('true');
+            more_status_rec_view = true;
+            status_rec_view();
         } catch (e) {
             getUserMediaError();
         }
@@ -667,7 +684,8 @@ function onAccessApproved(chromeMediaSourceId) {
                 recorder.stream.onended = function () {
                 };
             }
-            status_rec_view('false');
+            more_status_rec_view = false;
+            status_rec_view();
             stopScreenRecording();
             activeTab();
         };
@@ -819,7 +837,7 @@ function mainTimeVideo(time) {
 function checkTime() {
     if (config.isPaused) {
         if (!initialTime) return;
-        var timeDifference = Date.now() - initialTime;
+        var timeDifference = Date.now() - initialTime - Number(config.allTimePause());
         var formatted = convertTime(timeDifference);
         mainTimeVideo(formatted);
         setBadgeText(formatted);
