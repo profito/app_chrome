@@ -1,6 +1,9 @@
 @import 'https://fonts.googleapis.com/css?family=Open+Sans';
-$idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
-//$idApp: 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
+//$idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
+$idApp: 'lbfcfchlgpdbmmdabmjmdapibaoomjmg';
+
+$green: #4f953b;
+$red: #f04646;
 .UXC_Plugins {
   * {
     vertical-align: baseline;
@@ -13,7 +16,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
     padding: 0;
     margin: 0;
     *::selection {
-      background: #5ec700;
+      background: $green;
     }
   }
   border-radius: 4px;
@@ -32,7 +35,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
         position: absolute;
         right: -4px;
         bottom: 0;
-        border: 4px solid #5ec700;
+        border: 4px solid $green;
         background: white;
         border-top-left-radius: 4px;
         box-sizing: border-box;
@@ -115,7 +118,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
       transition: all 0.2s linear, padding 0s linear;
       position: relative;
       &.uxc_active_step {
-        border: 3px solid #5ec700;
+        border: 3px solid $green;
         border-radius: 4px;
         transition: all 0s linear, padding 0s linear;
         opacity: 1;
@@ -163,7 +166,9 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
         width: 100%;
         display: inline-block;
         .uxc_text_next {
-
+          text-align: center;
+          color: #808080;
+          margin: 5px 0;
         }
         .uxc_item_next {
           float: right;
@@ -179,9 +184,9 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
         .uxc_header_rec {
           position: absolute;
           font-size: 25px;
-          left: 10px;
-          color: #f04646;
-          bottom: 24px;
+          left: 0;
+          color: $red;
+          bottom: 80px;
           line-height: 2px;
           span {
             position: absolute;
@@ -191,6 +196,33 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
             left: 15px;
             top: -6px;
           }
+        }
+      }
+      .uxc_panel_btn {
+        background: $green;
+        position: relative;
+        width: 100%;
+        display: inline-block;
+        .uxc_item_panel_btn {
+          border: 1px solid #fff;
+          display: inline-block;
+          width: 80%;
+          padding: 10px 0;
+          font-size: 14px;
+          text-align: center;
+          color: #fff;
+          margin: 10px 10%;
+          border-radius: 4px;
+        }
+        .pauseRec {
+
+        }
+        .resumeRec {
+          background: $red;
+
+        }
+        .closeRec {
+
         }
       }
       .uxc_item_description {
@@ -220,7 +252,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
       display: inline-block;
       float: left;
       position: relative;
-      border-top: 1px solid #5ec700;
+      border-top: 1px solid $green;
       .uxc_navigation_item {
         width: 50%;
         display: inline-block;
@@ -228,7 +260,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
         float: left;
         &:nth-child(1),
         &:first-child {
-          border-right: 1px solid #5ec700;
+          border-right: 1px solid $green;
           box-sizing: border-box;
         }
         &:last-child {
@@ -239,7 +271,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
           height: 100%;
           background: rgba(208, 220, 197, 0.6);
           transition: background 0.2s linear;
-          color: #5ec700;
+          color: $green;
           white-space: nowrap;
           &:disabled {
             background: rgb(211, 211, 211);
@@ -304,7 +336,7 @@ $idApp:'dfhbnhciflaelghihmdfldmlpfbiobgc';
       font-family: 'Open Sans', sans-serif !important;
       cursor: pointer;
       &.uxc_green {
-        background: #5ec700;
+        background: $green;
       }
     }
   }

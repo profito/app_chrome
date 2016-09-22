@@ -17,7 +17,7 @@ function UXC_initialization() {
             //$('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
             //$('body').html(tmpl("UXC_tmpl_start", {}));
             if (obj.helpOpen == "true") {
-                UXC_open_modal('В данном тестировании мы не оцениваем вас.<br> Мы оцениваем только сайты, с которыми вы будете работать.', 'next(2)', 'Далее', 'uxc_green');
+                next(4);
             }
             var interval_uxc_btn = window.setInterval(function () {
                 if ($('.uxc_btn_play').length > 0) {
@@ -33,7 +33,18 @@ function UXC_initialization() {
                     console.log('sc', obj);
                     if (obj.scenario) {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                        $('.uxc_item_resume').hide();
+                        $('.closeRec').hide();
                         $('.uxc_item_description').text(obj.scenario.description);
+                        $('.uxc_text_next').html((Number(obj.activeStep) + 1) + '/' + obj.allStep);
+                        $('.uxc_number_element').html('Задание ' + (Number(obj.activeStep) + 1));
+                        if ((Number(obj.activeStep) + 1) == obj.allStep) {
+                            $('.uxc_item_resume').hide();
+                            $('.uxc_item_pause').hide();
+                            $('.uxc_item_next').hide();
+                            $('.closeRec').show();
+                            UXC_events_stop();
+                        }
                         UXC_events_next();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
@@ -48,19 +59,41 @@ function UXC_initialization() {
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             console.log(request);
+            if (request.status_rec == "true") {
+                console.log( $('.uxc_header_rec span'));
+                $('.uxc_header_rec span').text('Идет запись');
+            }
+            if (request.status_rec == "false") {
+                console.log( $('.uxc_header_rec span'));
+                $('.uxc_header_rec span').text('Идет запись 1');
+            }
             if (request.statusRecEl == "true") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
                     console.log('sc', obj);
                     if (obj.scenario) {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
+                        $('.uxc_item_resume').hide();
+                        $('.closeRec').hide();
                         $('.uxc_item_description').text(obj.scenario.description);
+                        $('.uxc_text_next').html((Number(obj.activeStep) + 1) + '/' + obj.allStep);
+                        $('.uxc_number_element').html('Задание ' + (Number(obj.activeStep) + 1));
+                        if ((Number(obj.activeStep) + 1) == obj.allStep) {
+                            $('.uxc_item_resume').hide();
+                            $('.uxc_item_pause').hide();
+                            $('.uxc_item_next').hide();
+                            $('.closeRec').show();
+                            UXC_events_stop();
+                        }
                         UXC_events_next();
-                        UXC_position();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
                     }
+                    UXC_position();
                 })
             }
+
+            $('.uxc_header_rec span').text('Идет запись');
+
             if (request.statusRecEl == "false") {
                 UXC_open_modal(' К сожалению, данный тест уже завершен.', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
             }
@@ -157,13 +190,19 @@ function UXC_events_next() {
     var uxc_btn_stop = $('.uxc_btn_stop');
     $(uxc_item_next).click(function () {
         chrome.runtime.sendMessage({eventPage: "nextStep"}, function (obj) {
-            console.log('sc', obj)
+            console.log('sc', obj);
             if (obj.scenario) {
-                if (obj.scenario == "finish") {
-                    $('.uxc_main_block').html(tmpl("UXC_tmpl_stop"));
-                    $(uxc_btn_stop).attr({disabled: false});
+                if (obj.scenario == "finish" || (Number(obj.activeStep) + 1) == obj.allStep) {
+                    $('.uxc_item_resume').hide();
+                    $('.uxc_item_pause').hide();
+                    $('.uxc_item_next').hide();
+                    $('.closeRec').show();
+                    $('.uxc_text_next').html((Number(obj.activeStep) + 1) + '/' + obj.allStep);
+                    $('.uxc_number_element').html('Задание ' + (Number(obj.activeStep) + 1));
                     UXC_events_stop();
                 } else {
+                    $('.uxc_text_next').html((Number(obj.activeStep) + 1) + '/' + obj.allStep);
+                    $('.uxc_number_element').html('Задание ' + (Number(obj.activeStep) + 1));
                     $('.uxc_item_description').text(obj.scenario.description);
                 }
             } else {
@@ -171,6 +210,23 @@ function UXC_events_next() {
             }
         })
     });
+    var uxc_item_pause = $('.uxc_item_pause');
+    $(uxc_item_pause).click(function () {
+        chrome.runtime.sendMessage({eventPage: "pauseRec"}, function (obj) {
+            console.log('pauseRec', obj);
+            $('.uxc_item_resume').show();
+            $('.uxc_item_pause').hide();
+        });
+    });
+    var resumeRec = $('.uxc_item_resume');
+    $(resumeRec).click(function () {
+        chrome.runtime.sendMessage({eventPage: "resumeRec"}, function (obj) {
+            console.log('resumeRec', obj);
+            $('.uxc_item_resume').hide();
+            $('.uxc_item_pause').show();
+        });
+    })
+
 }
 
 
