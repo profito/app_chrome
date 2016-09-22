@@ -45,25 +45,24 @@ function UXC_initialization() {
                             $('.closeRec').show();
                             UXC_events_stop();
                         }
-                        if ((Number(obj.activeStep) + 1) != obj.allStep) {
-                            if (obj.status_rec_view == true) {
-                                $('.uxc_header_rec').addClass('rec').removeClass('pause');
-                                $('.uxc_active_step').addClass('rec').removeClass('pause');
-                                $('.uxc_header_rec').text('Идет запись');
-                                $('.uxc_item_resume').hide();
-                                $('.uxc_item_pause').show();
-                                $('.uxc_item_next').show();
-
-                            }
-                            if (obj.status_rec_view == false) {
-                                $('.uxc_header_rec').addClass('pause').removeClass('rec');
-                                $('.uxc_active_step').addClass('pause').removeClass('rec');
-                                $('.uxc_header_rec').text('Запись на паузе');
-                                $('.uxc_item_resume').show();
-                                $('.uxc_item_pause').hide();
-                                $('.uxc_item_next').hide();
-                            }
+                        if (obj.status_rec_view == true) {
+                            $('.uxc_header_rec').addClass('rec').removeClass('pause');
+                            $('.uxc_active_step').addClass('rec').removeClass('pause');
+                            $('.uxc_header_rec').text('Идет запись');
+                            $('.uxc_item_resume').hide();
+                            $('.uxc_item_pause').show();
                         }
+                        if (obj.status_rec_view == false) {
+                            $('.uxc_header_rec').addClass('pause').removeClass('rec');
+                            $('.uxc_active_step').addClass('pause').removeClass('rec');
+                            $('.uxc_header_rec').text('Запись на паузе');
+                            $('.uxc_item_resume').show();
+                            $('.uxc_item_pause').hide();
+                        }
+                        if ((Number(obj.activeStep) + 1) == obj.allStep) {
+                            $('.uxc_item_next').hide();
+                        }
+
                         UXC_events_next();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
@@ -80,7 +79,11 @@ function UXC_initialization() {
             if (request.status_rec == true) {
                 $('.uxc_header_rec').addClass('rec').removeClass('pause');
                 $('.uxc_active_step').addClass('rec').removeClass('pause');
-                $('.uxc_item_next').show();
+                if($('.uxc_text_next').text().split('/')[0]==$('.uxc_text_next').text().split('/')[1]){
+                    $('.uxc_item_next').hide();
+                }else{
+                    $('.uxc_item_next').show();
+                }
                 $('.uxc_header_rec').text('Идет запись');
             }
             if (request.status_rec == false) {
@@ -213,8 +216,6 @@ function UXC_events_next() {
             console.log('sc', obj);
             if (obj.scenario) {
                 if (obj.scenario == "finish" || (Number(obj.activeStep) + 1) == obj.allStep) {
-                    $('.uxc_item_resume').hide();
-                    $('.uxc_item_pause').hide();
                     $('.uxc_item_next').hide();
                     $('.closeRec').show();
                     $('.uxc_text_next').html((Number(obj.activeStep) + 1) + '/' + obj.allStep);
