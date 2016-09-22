@@ -13,8 +13,8 @@ var config = {
     text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
     tabId: 0,
     isPaused: true,
-    //url: 'https://testlk.uxcrowd.ru',
-    url: 'http://localhost:9797',
+    url: 'https://testlk.uxcrowd.ru',
+    //url: 'http://localhost:9797',
     //url: 'https://lk.uxcrowd.ru',
     debug: true,
     allTime: [],
@@ -171,7 +171,6 @@ function saveVideo() {
                 });
             }
             chrome.tabs.sendMessage(config.tabId, {statusSend: "true"});
-
             location.reload();
         } else {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 404) {
@@ -183,7 +182,6 @@ function saveVideo() {
                     });
                 }
                 chrome.tabs.sendMessage(config.tabId, {statusSend: "false"});
-
                 location.reload();
             }
         }

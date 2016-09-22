@@ -41,6 +41,8 @@
     "images/main-icon.png",
     "images/loader.gif",
     "images/printscreen.png",
+    "images/uxc_pause.svg",
+    "images/uxc_rec.gif",
     "js/injected.js",
     "tmpl/tmpl.html",
     "css/uxc_injected_style.css"
@@ -50,7 +52,7 @@
       "matches": [
         "<all_urls>"
       ],
-      "scc":[
+      "scc": [
         "css/uxc_injected_style.css"
       ],
       "js": [

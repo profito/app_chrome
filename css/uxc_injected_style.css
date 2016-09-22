@@ -100,11 +100,14 @@
     transition: all 0.2s linear, padding 0s linear;
     position: relative; }
     .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step {
-      border: 3px solid #4f953b;
       border-radius: 4px;
       transition: all 0s linear, padding 0s linear;
       opacity: 1;
       max-height: 1000px; }
+      .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step.pause {
+        border: 3px solid #4f953b; }
+      .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step.rec {
+        border: 3px solid #f04646; }
       .UXC_Plugins .uxc_main_block .uxc_item.uxc_active_step .uxc_panel_header {
         width: 100%;
         cursor: move; }
@@ -153,15 +156,36 @@
         font-style: italic;
         color: #808080;
         margin: 10px 15px;
-        cursor: pointer; }
+        cursor: pointer;
+        display: none; }
       .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec {
-        position: absolute;
+        position: relative;
         font-size: 14px;
         white-space: nowrap;
-        left: 10px;
+        float: left;
         line-height: 16px;
         color: #f04646;
-        bottom: 65px; }
+        margin: 10px 15px 18px 35px; }
+        .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec.rec:before {
+          content: '';
+          position: absolute;
+          width: 15px;
+          height: 15px;
+          background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/uxc_rec.gif") no-repeat 50% 50%;
+          background-size: contain;
+          display: inline-block;
+          left: -20px;
+          top: 1px; }
+        .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec.pause:before {
+          content: '';
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/uxc_pause.svg") no-repeat 50% 50%;
+          background-size: contain;
+          display: inline-block;
+          left: -23px;
+          top: -2px; }
     .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_btn {
       background: #4f953b;
       position: relative;
@@ -178,7 +202,8 @@
         margin: 10px 10%;
         border-radius: 4px; }
         .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_btn .uxc_item_panel_btn.uxc_item_resume {
-          background: #f04646; }
+          background: #f04646;
+          position: relative; }
         .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_btn .uxc_item_panel_btn.uxc_btn_stop {
           background: #f04646; }
     .UXC_Plugins .uxc_main_block .uxc_item .uxc_item_description {

@@ -6,8 +6,8 @@ var config = {
     text_error_not_authorization: 'Пожалуйста, авторизуйтесь',
     text_error_if_role_not_tester: 'Пожалуйста, авторизуйтесь как тестировщик',
     tabId: 0,
-    //url: 'https://testlk.uxcrowd.ru',
-    url: 'http://localhost:9797',
+    url: 'https://testlk.uxcrowd.ru',
+    //url: 'http://localhost:9797',
     //url: 'https://lk.uxcrowd.ru',
     debug: false
 };

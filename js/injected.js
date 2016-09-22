@@ -17,7 +17,7 @@ function UXC_initialization() {
             //$('.uxc_step').html('<img style="" src="chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/loader.gif">');
             //$('body').html(tmpl("UXC_tmpl_start", {}));
             if (obj.helpOpen == "true") {
-                next(4);
+                next(1);
             }
             var interval_uxc_btn = window.setInterval(function () {
                 if ($('.uxc_btn_play').length > 0) {
@@ -29,7 +29,7 @@ function UXC_initialization() {
                 }
             }, 1000);
             if (obj.statusRec != "false") {
-                chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
+                chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {     //при старте и после перезагрузки страницы или перехода
                     console.log('sc', obj);
                     if (obj.scenario) {
                         $('.uxc_main_block').html(tmpl("UXC_tmpl_step"));
@@ -45,18 +45,24 @@ function UXC_initialization() {
                             $('.closeRec').show();
                             UXC_events_stop();
                         }
+                        if ((Number(obj.activeStep) + 1) != obj.allStep) {
+                            if (obj.status_rec_view == true) {
+                                $('.uxc_header_rec').addClass('rec').removeClass('pause');
+                                $('.uxc_active_step').addClass('rec').removeClass('pause');
+                                $('.uxc_header_rec').text('Идет запись');
+                                $('.uxc_item_resume').hide();
+                                $('.uxc_item_pause').show();
+                                $('.uxc_item_next').show();
 
-                        if (obj.status_rec_view == true) {
-                            $('.uxc_header_rec').text('Идет запись');
-                            $('.uxc_item_resume').hide();
-                            $('.uxc_item_pause').show();
-                            $('.uxc_item_next').show();
-                        }
-                        if (obj.status_rec_view == false) {
-                            $('.uxc_item_resume').show();
-                            $('.uxc_item_pause').hide();
-                            $('.uxc_item_next').hide();
-                            $('.uxc_header_rec').text('Запись на паузе');
+                            }
+                            if (obj.status_rec_view == false) {
+                                $('.uxc_header_rec').addClass('pause').removeClass('rec');
+                                $('.uxc_active_step').addClass('pause').removeClass('rec');
+                                $('.uxc_header_rec').text('Запись на паузе');
+                                $('.uxc_item_resume').show();
+                                $('.uxc_item_pause').hide();
+                                $('.uxc_item_next').hide();
+                            }
                         }
                         UXC_events_next();
                     } else {
@@ -72,9 +78,14 @@ function UXC_initialization() {
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             if (request.status_rec == true) {
+                $('.uxc_header_rec').addClass('rec').removeClass('pause');
+                $('.uxc_active_step').addClass('rec').removeClass('pause');
+                $('.uxc_item_next').show();
                 $('.uxc_header_rec').text('Идет запись');
             }
             if (request.status_rec == false) {
+                $('.uxc_header_rec').addClass('pause').removeClass('rec');
+                $('.uxc_active_step').addClass('pause').removeClass('rec');
                 $('.uxc_header_rec').text('Запись на паузе');
             }
             if (request.statusRecEl == "true") {
@@ -102,7 +113,6 @@ function UXC_initialization() {
                 })
             }
 
-            $('.uxc_header_rec span').text('Идет запись');
 
             if (request.statusRecEl == "false") {
                 UXC_open_modal(' К сожалению, данный тест уже завершен.', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
