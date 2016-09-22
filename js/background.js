@@ -200,7 +200,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.eventPage == "getStep") {
         if (config.getActiveStep()) {
-            sendResponse({scenario: config.getActiveStep(),activeStep:config.activeStep(), allStep:(config.scenario().steps.length)});
+            sendResponse({
+                scenario: config.getActiveStep(),
+                activeStep: config.activeStep(),
+                allStep: (config.scenario().steps.length)
+            });
             if (localStorage.getItem('startTimeStatus') == 'false') {
                 localStorage.setItem('startTimeStatus', true);
                 config.allTime.push({startTime: "00:00:00", orderNum: localStorage.getItem('orderNum')});
@@ -230,7 +234,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         } else {
             config.nextStep();
             if (config.getActiveStep()) {
-                sendResponse({scenario: config.getActiveStep(),activeStep:config.activeStep(), allStep:(config.scenario().steps.length)});
+                sendResponse({
+                    scenario: config.getActiveStep(),
+                    activeStep: config.activeStep(),
+                    allStep: (config.scenario().steps.length)
+                });
                 config.addTime();
             } else {
                 sendResponse({scenario: false});
@@ -509,7 +517,7 @@ function captureDesktop() {
         path: 'images/main-icon.png'
     });
 
-    var screenSources = ['window', 'screen'];
+    var screenSources = ['window'];
 
     if (enableTabAudio) {
         screenSources = ['tab', 'audio'];
@@ -642,6 +650,7 @@ function onAccessApproved(chromeMediaSourceId) {
 
         try {
             recorder.startRecording();
+            activeTab();
             alreadyHadGUMError = false;
             status_rec_view('true');
         } catch (e) {
@@ -660,6 +669,7 @@ function onAccessApproved(chromeMediaSourceId) {
             }
             status_rec_view('false');
             stopScreenRecording();
+            activeTab();
         };
 
         recorder.stream.getVideoTracks()[0].onended = function () {
@@ -1187,19 +1197,21 @@ function lookupForHTTPsTab(callback) {
         }
     });
 }
+var tabIdActive = '0';
 
 function executeScript(tabIdNew, tabId) {
     uxc_debugger('executeScript tabId ', tabId);
-
-
     chrome.tabs.executeScript(tabIdNew, {
         file: 'js/content-script.js'
     });
-    chrome.tabs.update(tabId, {
+    tabIdActive = tabId;
+}
+function activeTab() {
+    uxc_debugger('activeTab ', tabIdActive);
+    chrome.tabs.update(tabIdActive, {
         active: true
     });
 }
-
 function createAnswer(sdp) {
     peer = new webkitRTCPeerConnection(null);
 

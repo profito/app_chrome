@@ -58,14 +58,15 @@ function UXC_initialization() {
 
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
-            console.log(request);
             if (request.status_rec == "true") {
+                console.log('Запись');
                 console.log( $('.uxc_header_rec span'));
-                $('.uxc_header_rec span').text('Идет запись');
+                $('.uxc_header_rec').text('Запись');
             }
             if (request.status_rec == "false") {
+                console.log('Пауза');
                 console.log( $('.uxc_header_rec span'));
-                $('.uxc_header_rec span').text('Идет запись 1');
+                $('.uxc_header_rec').text('Пауза');
             }
             if (request.statusRecEl == "true") {
                 chrome.runtime.sendMessage({eventPage: "getStep"}, function (obj) {
@@ -216,6 +217,7 @@ function UXC_events_next() {
             console.log('pauseRec', obj);
             $('.uxc_item_resume').show();
             $('.uxc_item_pause').hide();
+            $('.uxc_item_next').hide();
         });
     });
     var resumeRec = $('.uxc_item_resume');
@@ -224,6 +226,7 @@ function UXC_events_next() {
             console.log('resumeRec', obj);
             $('.uxc_item_resume').hide();
             $('.uxc_item_pause').show();
+            $('.uxc_item_next').show();
         });
     })
 

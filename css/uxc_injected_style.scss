@@ -183,19 +183,12 @@ $red: #f04646;
         }
         .uxc_header_rec {
           position: absolute;
-          font-size: 25px;
-          left: 0;
+          font-size: 14px;
+          white-space: nowrap;
+          left: 10px;
+          line-height: 16px;
           color: $red;
-          bottom: 80px;
-          line-height: 2px;
-          span {
-            position: absolute;
-            font-size: 14px;
-            line-height: 16px;
-            white-space: nowrap;
-            left: 15px;
-            top: -6px;
-          }
+          bottom: 70px;
         }
       }
       .uxc_panel_btn {

@@ -156,18 +156,12 @@
         cursor: pointer; }
       .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec {
         position: absolute;
-        font-size: 25px;
-        left: 0px;
+        font-size: 14px;
+        white-space: nowrap;
+        left: 10px;
+        line-height: 16px;
         color: #f04646;
-        bottom: 80px;
-        line-height: 2px; }
-        .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_next .uxc_header_rec span {
-          position: absolute;
-          font-size: 14px;
-          line-height: 16px;
-          white-space: nowrap;
-          left: 15px;
-          top: -6px; }
+        bottom: 70px; }
     .UXC_Plugins .uxc_main_block .uxc_item .uxc_panel_btn {
       background: #4f953b;
       position: relative;
