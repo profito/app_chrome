@@ -171,7 +171,7 @@
           position: absolute;
           width: 15px;
           height: 15px;
-          background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/uxc_rec.gif") no-repeat 50% 50%;
+          background: url("chrome-extension://dfhbnhciflaelghihmdfldmlpfbiobgc/images/uxc_rec.gif") no-repeat 50% 50%;
           background-size: contain;
           display: inline-block;
           left: -20px;
@@ -181,7 +181,7 @@
           position: absolute;
           width: 20px;
           height: 20px;
-          background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/uxc_pause.svg") no-repeat 50% 50%;
+          background: url("chrome-extension://dfhbnhciflaelghihmdfldmlpfbiobgc/images/uxc_pause.svg") no-repeat 50% 50%;
           background-size: contain;
           display: inline-block;
           left: -23px;
@@ -267,7 +267,7 @@
       width: 500px;
       height: 218px;
       display: inline-block;
-      background: url("chrome-extension://lbfcfchlgpdbmmdabmjmdapibaoomjmg/images/printscreen.png") no-repeat 50% 50%;
+      background: url("chrome-extension://dfhbnhciflaelghihmdfldmlpfbiobgc/images/printscreen.png") no-repeat 50% 50%;
       background-size: cover;
       margin-top: 20px; }
     #uxc_main_modal .uxc_content_modal .uxc_btn_modal {

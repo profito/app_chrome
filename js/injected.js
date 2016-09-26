@@ -6,6 +6,39 @@ var UXC_js = {
 };
 
 function UXC_initialization() {
+    if (window.location.href.indexOf('app-tester-home/new-tasks') != -1) {
+        if ($('.btn.btn-success.btn-sm').length > 0) {
+            $('.btn.btn-success.btn-sm').click(function () {
+                chrome.runtime.sendMessage({
+                    eventPage: "setBtn",
+                    orderId: $(this).parent().attr('action').split('=')[1]
+                }, function (obj) {
+                });
+            });
+        }
+
+    }
+    if ((window.location.href.indexOf('app-tester-home') != -1) || (window.location.href.indexOf('app-new-tester-home') != -1)) {
+        if ($('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').length > 0) {
+            $('[action="uxcrowd://?orderId=1"]').click(function () {
+                chrome.runtime.sendMessage({
+                    eventPage: "setBtn",
+                    orderId: 1
+                }, function (obj) {
+                });
+            });
+
+            $('.tester-header-items.header-text a[href="uxcrowd://?orderId=2"]').click(function () {
+                chrome.runtime.sendMessage({
+                    eventPage: "setBtn",
+                    orderId: 2
+                }, function (obj) {
+                });
+            });
+        }
+    }
+
+
     console.log('UXC_initialization');
     chrome.runtime.sendMessage({eventPage: "statusRec"}, function (obj) {
         console.log('obj.openPluginsUxc', obj);
@@ -45,12 +78,14 @@ function UXC_initialization() {
                             $('.closeRec').show();
                             UXC_events_stop();
                         }
+
                         if (obj.status_rec_view == true) {
                             $('.uxc_header_rec').addClass('rec').removeClass('pause');
                             $('.uxc_active_step').addClass('rec').removeClass('pause');
                             $('.uxc_header_rec').text('Идет запись');
                             $('.uxc_item_resume').hide();
                             $('.uxc_item_pause').show();
+                            $('.uxc_item_next').show();
                         }
                         if (obj.status_rec_view == false) {
                             $('.uxc_header_rec').addClass('pause').removeClass('rec');
@@ -62,7 +97,6 @@ function UXC_initialization() {
                         if ((Number(obj.activeStep) + 1) == obj.allStep) {
                             $('.uxc_item_next').hide();
                         }
-
                         UXC_events_next();
                     } else {
                         UXC_open_modal('В данном тестe нет шагов', 'document.getElementsByTagName(\'body\')[0].removeChild(document.getElementById(\'uxc_main_modal\'));', 'Закрыть', '');
@@ -79,9 +113,9 @@ function UXC_initialization() {
             if (request.status_rec == true) {
                 $('.uxc_header_rec').addClass('rec').removeClass('pause');
                 $('.uxc_active_step').addClass('rec').removeClass('pause');
-                if($('.uxc_text_next').text().split('/')[0]==$('.uxc_text_next').text().split('/')[1]){
+                if ($('.uxc_text_next').text().split('/')[0] == $('.uxc_text_next').text().split('/')[1]) {
                     $('.uxc_item_next').hide();
-                }else{
+                } else {
                     $('.uxc_item_next').show();
                 }
                 $('.uxc_header_rec').text('Идет запись');
